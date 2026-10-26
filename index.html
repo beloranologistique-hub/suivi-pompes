@@ -4,30 +4,31 @@
 <base target="_top">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Suivi des pompes</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<title>OoMatos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
   :root {
-    --ink: #1c262b;
-    --steel: #69737b;
+    --ink: #16191c;
+    --steel: #60686e;
     --steel-soft: #98a1a8;
-    --ground: #f2f3f4;
+    --ground: #f4f5f6;
     --surface: #ffffff;
     --surface-raised: #edeff1;
     --line: #e1e4e6;
-    --accent: #2f6f97;
-    --accent-soft: #e7eff4;
+    --accent: #00677F;
+    --accent-soft: #e3eaec;
+    --yellow: #FFFA00;
     --accent-ink: #ffffff;
-    --header-bg: #223d44;
-    --header-bg-soft: #1a2f34;
+    --header-bg: #00677F;
+    --header-bg-soft: #004d60;
     --header-ink: #ffffff;
-    --header-tagline: rgba(255,255,255,.62);
+    --header-tagline: rgba(255,255,255,.75);
     --header-btn-bg: rgba(255,255,255,.14);
     --header-btn-line: rgba(255,255,255,.22);
     --banner-bg: #fdf1ce;
     --banner-ink: #7a5b16;
-    --ok: #1f6f63;
-    --ok-bg: #dcece7;
+    --ok: #00677F;
+    --ok-bg: #def0f4;
     --warn: #8a5a0b;
     --warn-bg: #fbecc8;
     --alert: #b1402d;
@@ -37,26 +38,34 @@
   /* Palette fixe (rendu « OoMatos » : bandeau sombre + accent bleu), quel que soit le mode sombre/clair de l'appareil. */
   * { box-sizing: border-box; }
   html { color-scheme: light; }
-  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
-  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-optical-sizing: auto; text-wrap: balance; margin: 0; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "Inter", ui-sans-serif, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  h1, h2, h3 { font-family: "Inter", ui-sans-serif, system-ui, sans-serif; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; margin: 0; }
   .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
   button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
   [hidden] { display: none !important; }
 
   /* ---------- En-tête ---------- */
-  .app-header { background: linear-gradient(155deg, var(--header-bg) 0%, var(--header-bg-soft) 100%); color: var(--header-ink); padding-block: 12px; }
+  .app-header { border-bottom: 0; background: linear-gradient(155deg, var(--header-bg) 0%, var(--header-bg-soft) 100%); color: var(--header-ink); padding-block: 12px; }
   .app-header-inner { max-width: 960px; margin: 0 auto; padding-inline: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-logo.mark { width: 42px; height: 42px; background: none; border: 0; padding: 0; box-shadow: none; }
+  .app-mark { width: 42px; height: 42px; display: block; }
+  .orano-foot { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--steel); font-size: 12px; padding: 14px 0 4px; }
+  .orano-foot img { height: 34px; width: auto; background: #fff; border-radius: 8px; padding: 3px 6px; }
+  #settingsTab .orano-foot { margin-top: 6px; }
+  .brand-logo.org { width: auto; height: 40px; padding: 3px 6px; background: #fff; border-radius: 9px; border: 0; }
+  .brand-logo.org img { height: 34px; width: auto; display: block; }
   .brand-logo { flex: none; width: 32px; height: 32px; border-radius: 9px; background: var(--header-btn-bg); border: 1px solid var(--header-btn-line); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-  .brand h1 { font-size: 19px; color: var(--header-ink); }
-  .brand .tagline { color: var(--header-tagline); font-size: 12px; display: block; }
+  .brand h1 { font-size: 24px; letter-spacing: -.02em; color: var(--header-ink); }
+  .brand .tagline { color: var(--header-tagline); font-size: 10.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; display: block; margin-top: 1px; }
   .masthead-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .pill-btn { color: var(--header-ink); font-size: 12px; font-weight: 600; border: 1px solid var(--header-btn-line); border-radius: 999px; padding: 5px 12px; background: var(--header-btn-bg); white-space: nowrap; cursor: pointer; }
   button.pill-btn:hover { background: var(--header-btn-line); }
-  .org-note { cursor: default; }
+  .org-note { cursor: pointer; }
+  @media (max-width: 420px) { .sync-time { display: none; } }
   .mode-banner { background: var(--banner-bg); color: var(--banner-ink); text-align: center; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 7px 16px; }
 
-  .page { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; padding: 18px 16px 100px; }
+  .page { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; padding: 16px 16px 130px; }
 
   /* ---------- Scan ---------- */
   .scan-hero { background: linear-gradient(155deg, var(--surface) 0%, var(--surface-raised) 100%); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
@@ -67,11 +76,11 @@
   .scan-hint b { color: var(--ink); font-weight: 600; }
 
   /* ---------- Compteurs ---------- */
-  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+  .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 2px; }
-  .tile.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
-  .tile .n { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; }
-  .tile .l { color: var(--steel); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+  .tile.is-active { border-color: var(--accent); background: var(--accent-soft); }
+  .tile .n { font-size: 22px; font-weight: 600; line-height: 1.1; }
+  .tile .l { color: var(--steel); font-size: 11px; letter-spacing: .01em; }
   .tile.t-warn .n { color: var(--warn); }
   .tile.t-danger .n { color: var(--alert); }
 
@@ -90,16 +99,16 @@
   #searchInput:focus { border-color: var(--accent); outline: none; }
   .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
   .chip { border: 1px solid transparent; background: var(--surface-raised); color: var(--steel); border-radius: 999px; padding: 5px 11px; font-size: 12.5px; cursor: pointer; }
-  .chip.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .chip.is-active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
   .btn { border: 1px solid transparent; background: var(--surface-raised); color: var(--ink); border-radius: 10px; padding: 8px 13px; font-size: 13.5px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
   .btn:hover { border-color: var(--steel-soft); }
-  .btn.primary, .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn.primary, .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
   .btn.danger { color: var(--alert); }
   .btn.is-listening { background: var(--alert); border-color: var(--alert); color: #fff; font-weight: 600; }
 
   /* ---------- Cartes ---------- */
   #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 13px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
   .card.is-example { border-style: dashed; }
   .card.is-danger { border-color: var(--alert); }
   .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
@@ -178,11 +187,173 @@
   .pickItem:hover { border-color: var(--accent); }
   .pickItem small { display: block; color: var(--steel); margin-top: 2px; }
 
+  /* ---------- Barre du bas (comme OoMatos) : Équipements · Scanner · Réglages ---------- */
+  .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--surface); border-top: 1px solid var(--line); display: flex; align-items: flex-end; justify-content: space-around; padding: 6px 10px calc(6px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 16px -12px rgba(20,26,29,.3); }
+  .tab-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--steel); font-weight: 600; font-size: 10.5px; text-transform: uppercase; letter-spacing: .03em; padding: 6px 20px; border-radius: 12px; min-width: 84px; }
+  .tab-btn svg { width: 22px; height: 22px; flex: none; }
+  .tab-btn.is-active { color: var(--accent); background: var(--accent-soft); }
+  .scan-fab { flex: none; margin-top: -30px; width: 80px; height: 80px; border-radius: 50%; background: #00677F; color: #FFFA00; border: 5px solid var(--surface); box-shadow: 0 10px 22px -6px rgba(0,103,127,.75); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; cursor: pointer; font-weight: 700; font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; }
+  .scan-fab .ic { line-height: 0; display: flex; }
+  .scan-fab .ic svg { width: 34px; height: 34px; }
+  .scan-fab.is-listening { background: var(--alert); box-shadow: 0 0 0 0 rgba(177,64,45,.55); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 16px rgba(177,64,45,0); } 100% { box-shadow: 0 0 0 0 rgba(177,64,45,0); } }
+  @media (prefers-reduced-motion: reduce) { .scan-fab.is-listening { animation: none; } }
+
+  /* ---------- Statuts, actions, réglages ---------- */
+  .tile.t-ok .n { color: var(--ok); }
+  .card.st-dispo { border-left: 5px solid var(--ok); }
+  .card.st-repli { border-left: 5px solid var(--steel-soft); background: var(--surface-raised); }
+  .badge.dispo { background: var(--ok-bg); color: var(--ok); }
+  .badge.repli { background: var(--line); color: var(--steel); }
+  .card { cursor: pointer; }
+  .card-mv { font-size: 12.5px; color: var(--steel); }
+  .bigAction { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px 14px; border: 1px solid var(--line); background: var(--surface); border-radius: 14px; cursor: pointer; font: inherit; color: var(--ink); box-shadow: var(--shadow); }
+  .bigAction:hover { border-color: var(--accent); }
+  .bigAction .ic { flex: none; width: 46px; height: 46px; border-radius: 12px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .bigAction.dispo .ic { background: var(--ok-bg); }
+  .bigAction.repli .ic { background: var(--surface-raised); }
+  .bigAction b { display: block; font-size: 15px; }
+  .bigAction small { display: block; color: var(--steel); font-size: 12px; margin-top: 1px; }
+  .tl { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--steel); }
+  .tl div { border-left: 3px solid var(--line); padding-left: 8px; }
+  .setCard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
+  .setCard h3 { font-size: 15px; }
+  .setCard p { margin: 0; }
+  .chk { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; }
+  .chk li::before { display: inline-block; width: 20px; font-weight: 700; }
+  .chk li.ok::before { content: "✔"; color: var(--ok); }
+  .chk li.todo::before { content: "○"; color: var(--warn); }
+  .chk li.info::before { content: "•"; color: var(--steel); }
+  .pill-btn.is-pending { background: var(--warn-bg); color: var(--warn); border-color: var(--warn-bg); }
+  .pill-btn.is-synced { background: var(--ok-bg); color: var(--ok); border-color: var(--ok-bg); display: inline-flex; align-items: center; gap: 6px; }
+  .pill-btn.is-synced svg { width: 15px; height: 15px; flex: none; }
+  .macaron { flex: none; width: 54px; height: 54px; border-radius: 50%; border: 3px solid var(--steel-soft); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; text-align: center; background: var(--surface); }
+  .macaron b { font-size: 9.5px; letter-spacing: .06em; }
+  .macaron span { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .macaron.ok { border-color: var(--ok); color: var(--ok); background: var(--ok-bg); }
+  .macaron.soon { border-color: #c98a12; color: var(--warn); background: var(--warn-bg); }
+  .macaron.ko { border-color: var(--alert); color: var(--alert); background: var(--alert-bg); }
+  .macaron.none { border-style: dashed; color: var(--steel); }
+  .loc-filters { display: flex; gap: 8px; }
+  .loc-filters select { flex: 1; min-width: 0; padding: 8px 10px; border-radius: 12px; font-size: 13.5px; color: var(--ink); background: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.8); box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; }
+  .loc-filters select.is-set { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .alertBox { border-radius: 14px; padding: 10px 12px; margin-bottom: 2px; font-size: 13.5px; border: 1px solid; }
+  .alertBox.danger { background: rgba(245,224,217,.85); border-color: rgba(177,64,45,.45); color: var(--alert); }
+  .alertBox.warn { background: rgba(251,236,200,.85); border-color: rgba(201,138,18,.45); color: var(--warn); }
+  .alertBox b { display: block; margin-bottom: 3px; }
+  .alertBox ul { margin: 0; padding-left: 18px; color: var(--ink); }
+  .actSummary { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.8); border-radius: 14px; padding: 10px 12px; }
+  .actSummary:empty { display: none; }
+  .actSummary .it { min-width: 0; }
+  .actSummary .it.full { grid-column: 1 / -1; }
+  .actSummary .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--steel); }
+  .actSummary .v { font-size: 14px; font-weight: 500; word-break: break-word; }
+  .actSummary .v.bad { color: var(--alert); font-weight: 700; } .actSummary .v.soon { color: var(--warn); font-weight: 700; } .actSummary .v.good { color: var(--ok); }
+  .actSummary .maj { grid-column: 1 / -1; font-size: 11.5px; color: var(--steel); }
+  .card-badges-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .card-apave .tx { line-height: 1.3; }
+  .card-apave { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--steel); }
+  .card-apave .tx b { display: block; color: var(--ink); font-size: 15px; }
+  .selRow { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; background: var(--ground); margin-bottom: 5px; font-size: 13.5px; cursor: pointer; }
+  .selRow input { width: 18px; height: 18px; flex: none; }
+  .selRow small { display: block; color: var(--steel); font-size: 11.5px; }
+  .alertSec { border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .alertSec h4 { margin: 0; font-size: 14px; }
+  .alertSec .chkline { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+  .alertSec .chkline input { width: 18px; height: 18px; }
+  .invFrame { width: 100%; height: 56vh; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+  .pill-btn.is-syncing::before { content: ""; display: inline-block; width: 11px; height: 11px; margin-right: 6px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -1px; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .pill-btn.is-offline { background: var(--alert-bg); color: var(--alert); border-color: var(--alert-bg); }
+
   /* ---------- Bouton flottant et message ---------- */
   .fab { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 20; border-radius: 999px; padding: 13px 18px; box-shadow: 0 8px 20px -6px rgba(28,33,39,.4); }
-  #toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(12px); background: var(--ink); color: var(--ground); padding: 10px 16px; border-radius: 16px; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 40; max-width: 90vw; text-align: center; }
+  #toast { position: fixed; left: 50%; bottom: 112px; transform: translateX(-50%) translateY(12px); background: var(--ink); color: var(--ground); padding: 10px 16px; border-radius: 16px; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 40; max-width: 90vw; text-align: center; }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+
+  /* ---------- Verre léger (style « liquid glass ») ---------- */
+  body { background: radial-gradient(900px 500px at 10% -5%, rgba(0,103,127,.16), transparent 60%), linear-gradient(180deg, #f1f2f3, #e4e7e9); background-attachment: fixed; }
+  .app-header { background: linear-gradient(160deg, rgba(0,103,127,.95), rgba(0,77,96,.92)); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); position: sticky; top: 0; z-index: 22; box-shadow: 0 6px 24px -12px rgba(0,0,0,.55); }
+  .card, .tile, .setCard, .alertSec, .selRow, .chip, .macaron {
+    background: rgba(255,255,255,.58); backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,.75); box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 8px 24px -14px rgba(0,60,75,.35);
+  }
+  .card, .setCard { border-radius: 20px; }
+  .tile { border-radius: 16px; }
+  .tile.is-active { background: rgba(222,240,244,.75); border-color: rgba(0,103,127,.5); }
+  .chip { background: rgba(255,255,255,.5); }
+  .chip.is-active { background: rgba(0,103,127,.9); border-color: transparent; }
+  .card-loc, .field input, .field select, .field textarea, .diffRow input, .btn { background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.7); box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; }
+  .btn.primary, .btn-primary { background: linear-gradient(180deg, rgba(0,125,152,.95), rgba(0,103,127,.95)); border-color: rgba(255,255,255,.25); box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 8px 18px -8px rgba(0,103,127,.7); }
+  .btn.danger { color: var(--alert); }
+  .macaron.ok { background: rgba(222,240,244,.8); } .macaron.soon { background: rgba(251,236,200,.8); } .macaron.ko { background: rgba(245,224,217,.85); }
+  .badge { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .bottom-nav { left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); border-radius: 28px; border: 1px solid rgba(255,255,255,.8); background: rgba(255,255,255,.62); backdrop-filter: blur(20px) saturate(1.6); -webkit-backdrop-filter: blur(20px) saturate(1.6); box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 14px 34px -14px rgba(0,60,75,.5); padding: 6px 10px; }
+  .tab-btn.is-active { border-radius: 20px; background: rgba(0,103,127,.12); }
+  .scan-fab { border: 4px solid rgba(255,255,255,.85); background: linear-gradient(160deg, #00849f, #00677F 60%, #00566b); box-shadow: 0 1px 0 rgba(255,255,255,.4) inset, 0 12px 26px -8px rgba(0,103,127,.85); }
+  .panel-overlay { background: rgba(10,40,48,.28); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+  .panel { background: rgba(255,255,255,.78); backdrop-filter: blur(26px) saturate(1.6); -webkit-backdrop-filter: blur(26px) saturate(1.6); border: 1px solid rgba(255,255,255,.85); box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 24px 60px -20px rgba(0,50,64,.55); border-radius: 26px 26px 0 0; }
+  @media (min-width: 640px) { .panel { border-radius: 26px; } }
+  .mode-banner { background: rgba(40,46,50,.08); color: #3a4248; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  #toast { background: rgba(20,40,46,.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+
+  /* ---------- Épuré ---------- */
+  .app-header { padding-block: 10px; border-bottom-width: 3px; }
+  .page { gap: 12px; }
+  .card { gap: 9px; box-shadow: 0 6px 20px -16px rgba(0,60,75,.4); }
+  .card-top .name { font-size: 16px; }
+  .card-loc { background: none; border: 0; box-shadow: none; padding: 0; color: var(--steel); }
+  .card-loc .val { font-weight: 400; font-size: 13.5px; }
+  .tile { align-items: center; text-align: center; padding: 10px 4px; }
+  .macaron { width: 48px; height: 48px; border-width: 2.5px; }
+  .macaron b { font-size: 8.5px; } .macaron span { font-size: 10px; }
+  .card-apave .tx b { font-size: 14px; }
+  .card-apave .tx { font-size: 12px; }
+  .setCard h3 { font-size: 15px; }
+  .tab-btn { letter-spacing: 0; text-transform: none; font-size: 11.5px; }
+  .scan-fab .lb { text-transform: none; letter-spacing: 0; font-size: 11px; }
+  .mode-banner { text-transform: none; letter-spacing: 0; font-weight: 600; font-size: 12px; padding: 5px 16px; }
+
+  /* ---------- Noir / gris, jaune en touche ---------- */
+  .org-badge { background: #fff; border-radius: 9px; padding: 3px 6px; display: flex; align-items: center; }
+  .org-badge img { height: 30px; width: auto; display: block; }
+  .masthead-right { margin-left: auto; }
+  .app-mark { border-radius: 0; }
+  .tile .n { color: var(--ink); }
+  .tile.t-ok .n { color: var(--accent); }
+  .tile.is-active { background: #2a3035; border-color: #2a3035; }
+  .tile.is-active .n, .tile.is-active .l { color: #fff; }
+  .chip.is-active { background: #2a3035; border-color: #2a3035; }
+  .chip { color: #3a4248; }
+  .tab-btn.is-active { background: rgba(42,48,53,.08); color: #16191c; }
+  .bottom-nav { background: rgba(255,255,255,.7); }
+  .scan-fab { background: linear-gradient(160deg, #3b4349, #23282c 70%); box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 12px 26px -8px rgba(0,0,0,.6); }
+  .card { border-left: 4px solid #8a9298; }
+  .card.st-dispo { border-left-color: var(--accent); }
+  .card.st-repli { border-left-color: #b7bdc1; }
+  .setCard h3, .panel h2 { color: #16191c; }
+  .pill-btn.is-synced { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.2); }
+  .pill-btn.is-synced svg circle { fill: #4fd1a5; }
+
+
+  /* ---------- Cœur blanc, touches de jaune ---------- */
+  body { background: radial-gradient(900px 480px at 10% -8%, rgba(0,103,127,.10), transparent 62%), linear-gradient(180deg, #fafbfb, #eef0f1); background-attachment: fixed; }
+  .brand h1 small.sub { font-family: "Inter", sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; opacity: .75; margin-left: 5px; }
+  .app-header { border-bottom: 3px solid #FFFA00; }
+  .tab-btn.is-active { box-shadow: inset 0 -3px 0 #FFFA00; }
+  .tile.is-active { box-shadow: 0 3px 0 #FFFA00; }
+  .chip.is-active { box-shadow: 0 2px 0 #FFFA00; }
+  .scan-fab { border-color: #fff; }
+
+  .app-header-inner { flex-wrap: nowrap; }
+  .brand { min-width: 0; }
+  .brand .tagline { font-size: 9px; letter-spacing: .08em; white-space: nowrap; }
+  .masthead-right { flex-wrap: nowrap; gap: 6px; flex: none; }
+  .masthead-right .pill-btn { padding: 4px 9px; font-size: 11.5px; }
+  .org-badge img { height: 26px; }
+  .bottom-nav .tab-btn { flex: 1; min-width: 0; padding: 6px 4px; }
+  .bottom-nav .scan-fab { flex: none; margin-inline: 6px; }
 </style>
 </head>
 <body>
@@ -190,15 +361,16 @@
 <header class="app-header">
   <div class="app-header-inner">
     <div class="brand">
-      <span class="brand-logo">▣</span>
+      <span class="brand-logo mark"><svg class="app-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 24L24 9A15 15 0 0 1 39 24Z" fill="#7fa593" opacity=".85"/><circle cx="24" cy="24" r="19.5" fill="none" stroke="#EEF23C" stroke-width="5.5"/><path d="M24 4.5A19.5 19.5 0 0 1 43.5 24" fill="none" stroke="#1c566a" stroke-width="5.5"/><circle cx="24" cy="24" r="6.2" fill="none" stroke="#EEF23C" stroke-width="3"/><circle cx="24" cy="24" r="2" fill="#1c566a"/></svg></span>
       <div>
-        <h1>Suivi des pompes</h1>
-        <span class="tagline">Suivi des équipements par puces RFID / NFC</span>
+        <h1>OoMatos</h1>
+        <span class="tagline">Localiser · Suivre · Sécuriser</span>
       </div>
     </div>
     <div class="masthead-right">
-      <button class="pill-btn" id="adminBtn" type="button">🔒 Administrateur</button>
-      <span class="pill-btn org-note" id="storageNote"></span>
+      <button class="pill-btn" id="adminBtn" type="button" hidden>🔒 Administrateur</button>
+      <button class="pill-btn org-note" id="storageNote" type="button" title="Toucher pour actualiser"></button>
+      <span class="org-badge"><img id="oranoLogo" alt="Orano" src="data:image/png;base64,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"></span>
     </div>
   </div>
 </header>
@@ -208,52 +380,120 @@
 <div class="page">
 
   <div id="inventoryTab">
-    <div class="scan-hero" style="margin-bottom:18px;">
-      <div class="scan-hero-row">
-        <div class="scan-icon">▣</div>
-        <button class="btn btn-primary scan-btn" id="scanOpenBtn" type="button">📡 Scanner une puce</button>
-      </div>
-      <div class="scan-hint">Approchez la puce de l'arrière de la tablette : la <b>fiche de suivi</b> de l'équipement s'ouvre. Puce inconnue → vous choisissez l'équipement à lui associer.</div>
+    <div class="summary" id="summaryTiles"></div>
+    <div class="toolbar">
+      <input id="searchInput" type="text" placeholder="Rechercher…">
+      <button class="btn primary" id="addBtn" type="button">+ Nouvel équipement</button>
     </div>
-
-    <div class="summary" id="summaryTiles" style="margin-bottom:18px;"></div>
-
-    <div class="banner admin-only" id="adminCard" style="margin-bottom:12px;">
-      <span><b>⚙ Mode administrateur</b><span class="sub">Le formulaire de saisie est commun à tous les équipements : les opérateurs ne remplissent que ce que vous y configurez.</span></span>
-      <span class="banner-actions">
-        <button class="btn" id="formConfigBtn" type="button">⚙ Configurer le formulaire</button>
-        <button class="btn" id="codeChangeBtn" type="button">🔑 Code administrateur</button>
-      </span>
-    </div>
-
-    <div class="banner admin-only" id="alertCard" style="margin-bottom:18px;">
-      <span><b>✉ Alertes mail</b><span class="sub" id="alertSub"></span></span>
-      <span class="banner-actions">
-        <button class="btn" id="diffusionBtn" type="button">⚙ Paramétrer</button>
-        <button class="btn" id="alertActivateBtn" type="button" hidden>Activer l'envoi automatique</button>
-        <button class="btn" id="alertSendBtn" type="button">Envoyer maintenant</button>
-      </span>
-    </div>
-
-    <div class="toolbar" style="margin-bottom:10px;">
-      <input id="searchInput" type="text" placeholder="Rechercher un nom, un code, un bâtiment, un local…">
-    </div>
-    <div class="chip-row" id="categoryChips" style="margin-bottom:12px;"></div>
+    <div class="chip-row" id="categoryChips"></div>
+    <div class="loc-filters" id="locFilters"></div>
     <div id="grid"></div>
   </div>
 
+  <div id="settingsTab" hidden>
+    <div class="setCard">
+      <h3>Mode</h3>
+      <p class="muted" id="roleInfo"></p>
+      <div><button class="btn" id="adminBtn2" type="button"></button></div>
+    </div>
+    <div class="setCard admin-only">
+      <h3>Formulaire de saisie</h3>
+      <p class="muted">Les champs que les opérateurs remplissent sur chaque équipement : un seul formulaire pour tous les équipements.</p>
+      <div><button class="btn primary" id="formConfigBtn" type="button">⚙ Configurer le formulaire</button></div>
+    </div>
+    <div class="setCard admin-only" id="alertCard">
+      <h3>✉ Alertes mail</h3>
+      <ul class="chk" id="alertSub"></ul>
+      <div class="banner-actions">
+        <button class="btn" id="diffusionBtn" type="button">⚙ Configurer les alertes</button>
+        <button class="btn primary" id="alertActivateBtn" type="button" hidden>Activer l'envoi automatique</button>
+        <button class="btn" id="alertSendBtn" type="button">Envoyer maintenant</button>
+      </div>
+    </div>
+    <div class="setCard">
+      <h3>Contrôle APAVE</h3>
+      <p class="muted">Changer en une fois la date de fin de validité du contrôle APAVE de plusieurs équipements (par exemple après une visite de contrôle).</p>
+      <div><button class="btn primary" id="apaveBulkBtn" type="button">🏷 Modifier les dates en masse</button></div>
+    </div>
+    <div class="setCard">
+      <h3>Inventaire par locaux</h3>
+      <p class="muted">Liste des équipements regroupés par local, au format HTML : à consulter, télécharger, ou (administrateur) envoyer par mail.</p>
+      <label class="chkline" style="display:flex;gap:8px;align-items:center;font-size:13.5px"><input type="checkbox" id="inv_repli" style="width:18px;height:18px"> Inclure les équipements repliés</label>
+      <div class="banner-actions">
+        <button class="btn" id="invPreviewBtn" type="button">👁 Aperçu</button>
+        <button class="btn" id="invDownloadBtn" type="button">⬇ Télécharger (HTML)</button>
+      </div>
+      <div class="field admin-only"><label>Envoyer l'inventaire à (administrateur)</label>
+        <div class="field-with-btn"><input id="inv_email" type="email" placeholder="nom@exemple.fr"><button class="btn primary" id="invSendBtn" type="button">✉ Envoyer</button></div>
+      </div>
+    </div>
+    <div class="setCard admin-only">
+      <h3>Données et sécurité</h3>
+      <div class="banner-actions">
+        <button class="btn" id="exportBtn" type="button">⬇ Exporter les équipements (CSV)</button>
+        <button class="btn" id="codeChangeBtn" type="button">🔑 Changer le code administrateur</button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+<nav class="bottom-nav">
+  <button class="tab-btn is-active" id="tabPompes" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="3.2" rx="1.2" fill="currentColor"/><rect x="4" y="10.4" width="16" height="3.2" rx="1.2" fill="currentColor"/><rect x="4" y="15.8" width="16" height="3.2" rx="1.2" fill="currentColor"/></svg>Équipements</button>
+  <button class="scan-fab" id="scanOpenBtn" type="button"><span class="ic"><svg viewBox="0 0 512 512" width="34" height="34" aria-hidden="true" fill="none" stroke="#FFFA00" stroke-width="40" stroke-linecap="round"><circle cx="256" cy="256" r="30" fill="#FFFA00" stroke="none"/><path d="M222 190a96 96 0 0 0 0 132M290 190a96 96 0 0 1 0 132"/><path d="M185 130a176 176 0 0 0 0 252M327 130a176 176 0 0 1 0 252"/><path d="M130 60a256 256 0 0 0 0 392M382 60a256 256 0 0 1 0 392"/></svg></span><span class="lb">Scanner</span></button>
+  <button class="tab-btn" id="tabReglages" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8zm8.2 4.4v-2l-2.1-.5a6.6 6.6 0 0 0-.7-1.6l1.1-1.9-1.4-1.4-1.9 1.1a6.6 6.6 0 0 0-1.6-.7L13 3.8h-2l-.5 2.1a6.6 6.6 0 0 0-1.6.7L7 5.5 5.6 6.9l1.1 1.9a6.6 6.6 0 0 0-.7 1.6l-2.1.5v2l2.1.5c.2.6.4 1.1.7 1.6l-1.1 1.9L7 18.3l1.9-1.1c.5.3 1 .5 1.6.7l.5 2.1h2l.5-2.1c.6-.2 1.1-.4 1.6-.7l1.9 1.1 1.4-1.4-1.1-1.9c.3-.5.5-1 .7-1.6z" fill="currentColor"/></svg>Réglages</button>
+</nav>
+
+<!-- ACTIONS APRÈS SCAN -->
+<div class="panel-overlay" id="actionOverlay" hidden>
+  <div class="panel">
+    <h2 id="actTitle"></h2>
+    <div class="muted" id="actInfo"></div>
+    <div id="actAlerts"></div>
+    <div class="actSummary" id="actSummary"></div>
+    <button class="bigAction dispo" id="actDispoBtn" type="button"><span class="ic">📦</span><span><b>Mise à disposition</b><small>L'équipement est mis à disposition : on indique où</small></span></button>
+    <button class="bigAction repli" id="actRepliBtn" type="button"><span class="ic">↩️</span><span><b>Repli</b><small>L'équipement est replié / retiré du site</small></span></button>
+    <button class="bigAction" id="actSuiviBtn" type="button"><span class="ic">📋</span><span><b>Suivi</b><small>Formulaire : maintenance, conformité, commentaires…</small></span></button>
+    <div class="tl" id="actHistory"></div>
+    <div class="panel-actions">
+      <div><a href="#" id="actEditLink" class="muted">Modifier l'identification</a></div>
+      <div class="right"><button class="btn" id="cancelActBtn" type="button">Fermer</button></div>
+    </div>
+  </div>
 </div>
 
-<button class="btn btn-primary fab admin-only" id="addBtn" type="button">+ Ajouter un équipement</button>
+<!-- MISE À DISPOSITION / REPLI -->
+<div class="panel-overlay" id="mvOverlay" hidden>
+  <div class="panel">
+    <h2 id="mvTitle"></h2>
+    <div class="lieu-group" id="mvLieuBox">
+      <span class="field-label">Où l'équipement est-il mis à disposition ?</span>
+      <div class="field-row">
+        <div class="field narrow"><label>Tranche</label><input id="m_tranche" placeholder="Ex. 1"></div>
+        <div class="field wide"><label>Bâtiment</label><input id="m_batiment" list="batList" placeholder="Ex. BAN"></div>
+        <div class="field"><label>Local</label><input id="m_local" placeholder="Ex. 0 114"></div>
+      </div>
+    </div>
+    <div class="field"><label>Commentaire (facultatif)</label><textarea id="m_commentaire" rows="3" placeholder="Ex. état à la remise, motif du repli…"></textarea></div>
+    <div class="panel-actions">
+      <div></div>
+      <div class="right">
+        <button class="btn" id="cancelMvBtn" type="button">Annuler</button>
+        <button class="btn primary" id="okMvBtn" type="button">Valider</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- FICHE EQUIPEMENT -->
 <div class="panel-overlay" id="eqOverlay" hidden>
   <div class="panel">
     <h2 id="eqTitle">Nouvel équipement</h2>
-    <div class="field"><label>Nom</label><input id="f_nom" placeholder="Ex. Pompe d'épuisement P-101"></div>
-    <div class="field"><label>Catégorie</label><input id="f_categorie" list="catList" placeholder="Ex. Pompe">
+    <div class="field"><label>Nom</label><input id="f_nom" placeholder="Ex. Équipement P-101"></div>
+    <div class="field"><label>Catégorie</label><input id="f_categorie" list="catList" placeholder="Ex. Catégorie">
       <datalist id="catList"></datalist>
     </div>
+    <div class="field"><label>Numéro de série</label><input id="f_serie" placeholder="Ex. SN-2021-11802"></div>
     <div class="field">
       <label>Identifiant de la puce (RFID / NFC)</label>
       <div class="field-with-btn">
@@ -268,14 +508,14 @@
           <input id="tagLink" readonly>
           <button type="button" class="btn" id="copyTagLinkBtn">Copier</button>
         </div>
-        <div class="hint">Enregistrez ce lien (type « URL ») sur la puce avec l'application gratuite NFC Tools. Ensuite, approcher le téléphone de la puce ouvre directement le suivi de cette pompe.</div>
+        <div class="hint">Enregistrez ce lien (type « URL ») sur la puce avec l'application gratuite NFC Tools. Ensuite, approcher le téléphone de la puce ouvre directement le suivi de cet équipement.</div>
       </div>
     </div>
 
     <div class="hint" style="margin-bottom:12px">Localisation, date de pose, commentaires et caractéristiques se renseignent dans le formulaire de suivi, qui s'ouvre après l'enregistrement ou par scan de la puce.</div>
 
     <div class="panel-actions">
-      <button class="btn danger" id="deleteEqBtn" type="button">Supprimer</button>
+      <button class="btn danger admin-only" id="deleteEqBtn" type="button">Supprimer</button>
       <div class="right">
         <button class="btn" id="cancelEqBtn" type="button">Annuler</button>
         <button class="btn primary" id="saveEqBtn" type="button">Enregistrer</button>
@@ -287,22 +527,74 @@
 <!-- ALERTES MAIL -->
 <div class="panel-overlay" id="diffOverlay" hidden>
   <div class="panel">
-    <h2>Alertes par mail</h2>
+    <h2>Configuration des alertes</h2>
     <div class="field">
-      <label>Alerter X jours avant l'échéance</label>
-      <input id="f_seuil" type="number" min="1" style="max-width:120px">
-    </div>
-    <div class="field">
-      <label>Destinataires</label>
+      <label>Destinataires par défaut</label>
       <div id="diffList"></div>
       <div><button class="btn" id="addDiffBtn" type="button">+ Ajouter un destinataire</button></div>
     </div>
-    <div class="hint">Un mail récapitulatif part chaque jour vers 7 h tant qu'une échéance est proche ou dépassée, ou qu'un équipement est non conforme (relance au bout de 7 jours). L'envoi automatique s'active depuis la page d'accueil.</div>
+    <div class="alertSec">
+      <h4>📦 Mise à disposition chantier</h4>
+      <label class="chkline"><input type="checkbox" id="al_dispo_actif"> Alerte active</label>
+      <div class="field"><label>Alerter quand un équipement est à disposition depuis plus de … jours</label><input id="al_dispo_jours" type="number" min="1" style="max-width:120px"></div>
+      <div class="field"><label>Destinataires spécifiques (facultatif, séparés par des virgules)</label><input id="al_dispo_dest" placeholder="vide = liste par défaut"></div>
+    </div>
+    <div class="alertSec">
+      <h4>🏷 Contrôle APAVE (conformité du matériel)</h4>
+      <label class="chkline"><input type="checkbox" id="al_apave_actif"> Alerte active</label>
+      <div class="field"><label>Alerter … jours avant la fin de validité (et après expiration)</label><input id="al_apave_jours" type="number" min="1" style="max-width:120px"></div>
+      <div class="field"><label>Destinataires spécifiques (facultatif)</label><input id="al_apave_dest" placeholder="vide = liste par défaut"></div>
+    </div>
+    <div class="alertSec">
+      <h4>📋 Champs du formulaire (échéances, non-conformités)</h4>
+      <label class="chkline"><input type="checkbox" id="al_form_actif"> Alerte active</label>
+      <div class="field"><label>Alerter … jours avant une date d'échéance</label><input id="al_form_jours" type="number" min="1" style="max-width:120px"></div>
+      <div class="field"><label>Destinataires spécifiques (facultatif)</label><input id="al_form_dest" placeholder="vide = liste par défaut"></div>
+    </div>
+    <div class="field"><label>Relancer la même alerte au bout de … jours</label><input id="al_relance" type="number" min="1" style="max-width:120px"></div>
+    <div class="hint">Un mail récapitulatif part chaque jour vers 7 h s'il y a des alertes à envoyer. L'envoi automatique s'active depuis les Réglages. Un équipement replié ne déclenche aucune alerte.</div>
     <div class="panel-actions">
       <div></div>
       <div class="right">
         <button class="btn" id="cancelDiffBtn" type="button">Annuler</button>
         <button class="btn primary" id="saveDiffBtn" type="button">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APAVE EN MASSE -->
+<div class="panel-overlay" id="apaveOverlay" hidden>
+  <div class="panel">
+    <h2>Contrôle APAVE — dates en masse</h2>
+    <div class="field"><label>Nouvelle date de fin de validité</label><input id="ap_date" type="date"></div>
+    <input id="ap_search" type="text" placeholder="Filtrer : nom, local, n° de série…" style="border:1px solid var(--line);border-radius:10px;padding:9px 10px">
+    <div class="banner-actions">
+      <button class="btn" id="ap_all" type="button">Tout cocher (liste affichée)</button>
+      <button class="btn" id="ap_none" type="button">Tout décocher</button>
+    </div>
+    <div id="ap_list" style="max-height:38vh;overflow-y:auto"></div>
+    <div class="hint" id="ap_count"></div>
+    <div class="panel-actions">
+      <div></div>
+      <div class="right">
+        <button class="btn" id="ap_cancel" type="button">Annuler</button>
+        <button class="btn primary" id="ap_ok" type="button">Appliquer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTAIRE -->
+<div class="panel-overlay" id="invOverlay" hidden>
+  <div class="panel" style="max-width:860px">
+    <h2>Inventaire par locaux</h2>
+    <iframe class="invFrame" id="invFrame" title="Inventaire"></iframe>
+    <div class="panel-actions">
+      <div></div>
+      <div class="right">
+        <button class="btn" id="invDl2" type="button">⬇ Télécharger</button>
+        <button class="btn primary" id="invClose" type="button">Fermer</button>
       </div>
     </div>
   </div>
@@ -328,9 +620,10 @@
         <div class="field"><label>Local</label><input id="s_local" placeholder="Ex. 0 114"></div>
       </div>
     </div>
-    <div class="field">
-      <label>Date de pose</label>
-      <input id="s_datePose" type="date">
+    <div class="field"><label>Numéro de série</label><input id="s_serie" placeholder="Ex. SN-2021-11802"></div>
+    <div class="field-row">
+      <div class="field"><label>Date de pose</label><input id="s_datePose" type="date"></div>
+      <div class="field"><label>Contrôle APAVE · valable jusqu'au</label><input id="s_apave" type="date"></div>
     </div>
     <div id="suiviChampsList" style="display:flex;flex-direction:column;gap:12px;"></div>
     <div class="field">
@@ -338,7 +631,7 @@
       <textarea id="s_commentaires" rows="3" placeholder="Anomalie, fuite, bruit anormal, non-conformité constatée sur le terrain…"></textarea>
     </div>
     <div class="panel-actions">
-      <a href="#" id="suiviFullEditLink" class="muted admin-only">Modifier l'identification</a>
+      <a href="#" id="suiviFullEditLink" class="muted">Modifier l'identification</a>
       <div class="right">
         <button class="btn" id="cancelSuiviBtn" type="button">Annuler</button>
         <button class="btn primary" id="saveSuiviBtn" type="button">Enregistrer</button>
@@ -392,7 +685,7 @@
     <div class="field"><input id="pickSearch" placeholder="Rechercher un équipement sans puce…"></div>
     <div id="pickList"></div>
     <div class="panel-actions">
-      <div><button class="btn admin-only" id="pickCreateBtn" type="button">➕ Nouvel équipement</button></div>
+      <div><button class="btn" id="pickCreateBtn" type="button">➕ Nouvel équipement</button></div>
       <div class="right"><button class="btn" id="pickCancelBtn" type="button">Annuler</button></div>
     </div>
   </div>
@@ -403,7 +696,7 @@
 <script>
   // Page hébergée hors Apps Script : coller ici l'URL /exec du déploiement pour partager les données
   // (laisser vide = mode local, données stockées uniquement dans ce navigateur)
-     var API_URL = "https://script.google.com/macros/s/AKfycbymBAxae2JLMMA9Br6qYqEtVH0k1BeZHOdVWM5uC-Y4b5WU92ALCp5a7DuaTMNnxL8V/exec";;
+  var API_URL = "https://script.google.com/macros/s/AKfycbymBAxae2JLMMA9Br6qYqEtVH0k1BeZHOdVWM5uC-Y4b5WU92ALCp5a7DuaTMNnxL8V/exec";
 
   // Aperçu : true = données d'exemple, rien n'est enregistré (rechargez la page pour repartir des exemples)
   var DEMO = false;
@@ -417,7 +710,7 @@
       function load() {
         if (DEMO) { mem = mem || buildDemo(); return JSON.parse(JSON.stringify(mem)); }
         try { var raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch (e) {}
-        return mem || { equipements: [], plans: [], formulaire: [], diffusion: [], seuilJours: 30 };
+        return mem || { equipements: [], plans: [], formulaire: [], mouvements: [], diffusion: [], seuilJours: 30 };
       }
       function save(db) {
         mem = db;
@@ -437,48 +730,62 @@
         var extras = {
           d1: [-1500, ""],
           d2: [-900, "Vibrations légèrement plus fortes qu'à la dernière ronde, à surveiller."],
-          d3: [-700, "Fuite au joint constatée à la ronde du matin : pompe à l'arrêt, intervention à programmer. Photo envoyée au chef d'équipe."],
+          d3: [-700, "Fuite au joint constatée à la ronde du matin : équipement à l'arrêt, intervention à programmer. Photo envoyée au chef d'équipe."],
           d4: [-2100, ""],
           d5: [-300, ""],
           d6: [-120, ""]
         };
+        var APAVE = { d1: -10, d2: 20, d3: 200, d4: 90, d5: 15, d6: null };
         function eq(id, nom, cat, code, t, b, l, px, py, maj, champs) {
+          var serie = "";
+          champs = champs.filter(function (c) { if (c.Nom === "N° de série") { serie = c.Valeur; return false; } return true; });
           champs.forEach(function (c, i) { c.Id = id + "-c" + i; c.EquipementId = id; c.Ordre = i; });
           return { Id: id, Nom: nom, Categorie: cat, CodeRFID: code, Tranche: t, Batiment: b, Local: l,
             EmplacementTexte: "Tranche " + t + " / " + b + " / Local " + l,
             PlanId: "", PlanX: "", PlanY: "",
             DateCreation: dd(-300), DerniereMaj: dd(maj), example: true, champs: champs,
-            DatePose: dd(extras[id][0]), Commentaires: extras[id][1] };
+            DatePose: dd(extras[id][0]), Commentaires: extras[id][1], NumeroSerie: serie, ApaveDate: APAVE[id] == null ? "" : dd(APAVE[id]) };
         }
-        return {
+        var demo = {
           equipements: [
-            eq("d1", "Pompe d'épuisement P-101", "Pompe", "04:A1:B2:C3:D4:E5:F1", "1", "Station de pompage", "SP 012", 80, 75, -45, [
+            eq("d1", "Groupe d'épuisement P-101", "Hydraulique", "04:A1:B2:C3:D4:E5:F1", "1", "Station de pompage", "SP 012", 80, 75, -45, [
               ch("N° de série", "texte", "SN-2019-04417", false), ch("Puissance (kW)", "nombre", "15", false),
               ch("Prochaine maintenance", "date_echeance", dd(-6), true), ch("État", "conformite", "Conforme", true),
               ch("Notice constructeur", "fichier", "", false)]),
-            eq("d2", "Pompe de circulation P-204", "Pompe", "04:A1:B2:C3:D4:E5:F2", "1", "Salle des machines", "0 031", 34, 57, -5, [
+            eq("d2", "Groupe de circulation P-204", "Hydraulique", "04:A1:B2:C3:D4:E5:F2", "1", "Salle des machines", "0 031", 34, 57, -5, [
               ch("N° de série", "texte", "SN-2021-11802", false), ch("Puissance (kW)", "nombre", "45", false),
               ch("Prochaine maintenance", "date_echeance", dd(12), true), ch("État", "conformite", "Conforme", true)]),
-            eq("d3", "Pompe doseuse P-310", "Pompe", "04:A1:B2:C3:D4:E5:F3", "1", "BAN", "0 114", 21, 28, -2, [
+            eq("d3", "Doseur P-310", "Hydraulique", "04:A1:B2:C3:D4:E5:F3", "1", "BAN", "0 114", 21, 28, -2, [
               ch("N° de série", "texte", "SN-2020-07733", false), ch("Prochaine maintenance", "date_echeance", dd(75), true),
               ch("État", "conformite", "Non conforme", true)]),
-            eq("d4", "Pompe de relevage P-118", "Pompe", "04:A1:B2:C3:D4:E5:F4", "1", "BK", "0 207", 69, 28, -20, [
+            eq("d4", "Groupe de relevage P-118", "Hydraulique", "04:A1:B2:C3:D4:E5:F4", "1", "BK", "0 207", 69, 28, -20, [
               ch("N° de série", "texte", "SN-2018-02290", false), ch("Prochaine maintenance", "date_echeance", dd(140), true),
               ch("État", "conformite", "Conforme", true)]),
-            eq("d5", "Moteur de pompe M-45", "Moteur", "04:A1:B2:C3:D4:E5:F5", "1", "BL", "0 318", 88, 28, -60, [
+            eq("d5", "Moteur M-45", "Moteur", "04:A1:B2:C3:D4:E5:F5", "1", "BL", "0 318", 88, 28, -60, [
               ch("N° de série", "texte", "SN-2022-15001", false), ch("Dernier contrôle électrique", "date", dd(-120), true),
               ch("Prochaine maintenance", "date_echeance", dd(210), true)]),
-            eq("d6", "Pompe portable PP-02", "Pompe", "04:A1:B2:C3:D4:E5:F6", "2", "BR", "0 045", null, null, -1, [
+            eq("d6", "Groupe portable PP-02", "Hydraulique", "04:A1:B2:C3:D4:E5:F6", "2", "BR", "0 045", null, null, -1, [
               ch("N° de série", "texte", "SN-2023-20118", false), ch("Prochaine maintenance", "date_echeance", dd(300), true),
               ch("État", "conformite", "Conforme", true)])
           ],
           plans: [],
-          formulaire: FORM,
+          formulaire: FORM.filter(function (f) { return f.Nom !== "N° de série"; }),
           codeAdmin: "1234",
           alertesActives: true,
-          diffusion: ["responsable.pompes@exemple.fr", "maintenance@exemple.fr"],
+          diffusion: ["responsable.materiel@exemple.fr", "maintenance@exemple.fr"],
           seuilJours: 30
         };
+        var st = { d1: ["À disposition", -45], d2: ["À disposition", -30], d3: ["À disposition", -12], d4: ["Replié", -20], d5: ["À disposition", -60] };
+        demo.mouvements = [];
+        demo.equipements.forEach(function (e) {
+          var x = st[e.Id];
+          if (!x) { e.Statut = ""; e.DateStatut = ""; return; }
+          e.Statut = x[0]; e.DateStatut = dd(x[1]);
+          demo.mouvements.push({ Date: dd(x[1]) + " 08:30", EquipementId: e.Id, Nom: e.Nom, Action: x[0], Tranche: e.Tranche, Batiment: e.Batiment, Local: e.Local,
+            Commentaire: x[0] === "Replié" ? "Fin de chantier, équipement rincé et rangé" : "Mise à disposition équipe maintenance" });
+        });
+        demo.mouvements.sort(function (a, b) { return a.Date < b.Date ? 1 : -1; });
+        return demo;
       }
       function uid() { return "id-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
       function today() { return new Date().toISOString().slice(0, 10); }
@@ -486,7 +793,9 @@
         getData: function () {
           var d = JSON.parse(JSON.stringify(load()));
           d.adminDefini = !!d.codeAdmin; delete d.codeAdmin;
-          d.formulaire = d.formulaire || [];
+          d.formulaire = d.formulaire || []; d.mouvements = d.mouvements || [];
+          d.alertes = d.alertes || { dispo: { actif: true, jours: 30, dest: [] }, apave: { actif: true, jours: 30, dest: [] }, form: { actif: true, jours: d.seuilJours || 30, dest: [] }, relance: 7 };
+          d.seuilJours = d.alertes.form.jours;
           return d;
         },
         getAppUrl: function () { return location.href.split("?")[0].split("#")[0]; },
@@ -499,19 +808,22 @@
           save(db);
           return true;
         },
-        saveEquipement: function (code, p) {
-          var db = load(); exiger(db, code);
+        saveEquipement: function (p, code) {
+          var db = load();
           if (!String(p.nom || "").trim()) throw new Error("Le nom est obligatoire");
-          dupePuce(db, p.codeRFID, p.id);
-          var idx = db.equipements.findIndex(function (e) { return e.Id === p.id; });
+          var cle = p.id || p.clientId;
+          dupePuce(db, p.codeRFID, cle);
+          var idx = db.equipements.findIndex(function (e) { return e.Id === cle; });
           if (idx >= 0) {
             var e = db.equipements[idx];
-            e.Nom = p.nom; e.Categorie = p.categorie || ""; e.CodeRFID = p.codeRFID || ""; e.DerniereMaj = today();
+            var avant = String(e.CodeRFID || "").trim();
+            if (avant && String(p.codeRFID || "").trim() !== avant && (!db.codeAdmin || db.codeAdmin !== String(code))) throw new Error("Seul l'administrateur peut remplacer une puce déjà associée");
+            e.Nom = p.nom; e.Categorie = p.categorie || ""; e.NumeroSerie = p.numeroSerie || ""; e.CodeRFID = p.codeRFID || ""; e.DerniereMaj = today();
             save(db); return { id: e.Id };
           }
-          var id = uid();
-          db.equipements.push({ Id: id, Nom: p.nom, Categorie: p.categorie || "", CodeRFID: p.codeRFID || "", Tranche: "", Batiment: "", Local: "",
-            EmplacementTexte: "", DatePose: "", Commentaires: "", DateCreation: today(), DerniereMaj: today(), champs: [] });
+          var id = cle || uid();
+          db.equipements.push({ Id: id, Nom: p.nom, Categorie: p.categorie || "", NumeroSerie: p.numeroSerie || "", ApaveDate: "", CodeRFID: p.codeRFID || "", Tranche: "", Batiment: "", Local: "",
+            EmplacementTexte: "", DatePose: "", Commentaires: "", Statut: "", DateStatut: "", DateCreation: today(), DerniereMaj: today(), champs: [] });
           save(db);
           return { id: id };
         },
@@ -523,34 +835,59 @@
         },
         saveFormulaire: function (code, champs) {
           var db = load(); exiger(db, code);
-          var vus = {};
           db.formulaire = (champs || []).filter(function (c) { return String(c.nom || "").trim(); }).map(function (c, i) {
-            var id = c.id || uid(); vus[id] = true;
-            return { Id: id, Nom: c.nom.trim(), Type: c.type, Ordre: i };
+            return { Id: c.id || uid(), Nom: c.nom.trim(), Type: c.type, Ordre: i };
           });
-          db.equipements.forEach(function (e) { e.champs = (e.champs || []).filter(function (c) { return vus[c.ChampId]; }); });
-          save(db);
+          save(db); // les valeurs déjà saisies d'un champ retiré restent conservées (masquées)
           return true;
         },
         saveSuivi: function (p) {
           var db = load();
           var e = db.equipements.find(function (x) { return x.Id === p.id; });
           if (!e) throw new Error("Équipement introuvable");
-          e.Tranche = p.tranche || ""; e.Batiment = p.batiment || ""; e.Local = p.local || "";
-          e.DatePose = p.datePose || ""; e.Commentaires = p.commentaires || ""; e.DerniereMaj = today();
-          e.EmplacementTexte = [p.tranche ? "Tranche " + p.tranche : "", p.batiment, p.local ? "Local " + p.local : ""].filter(Boolean).join(" / ");
+          var map = { tranche: "Tranche", batiment: "Batiment", local: "Local", datePose: "DatePose", commentaires: "Commentaires", numeroSerie: "NumeroSerie", apave: "ApaveDate" };
+          var conflits = [], base = p.base || {};
+          Object.keys(p.eq || {}).forEach(function (k) {
+            var cur = String(e[map[k]] || "");
+            if (Object.prototype.hasOwnProperty.call(base, k) && String(base[k] || "") !== cur && cur !== String(p.eq[k] || "")) conflits.push({ champ: map[k], ancien: cur });
+            e[map[k]] = p.eq[k];
+          });
+          e.EmplacementTexte = [e.Tranche ? "Tranche " + e.Tranche : "", e.Batiment, e.Local ? "Local " + e.Local : ""].filter(Boolean).join(" / ");
           var defs = {};
           (db.formulaire || []).forEach(function (f) { defs[f.Id] = f; });
+          e.champs = e.champs || [];
           (p.valeurs || []).forEach(function (v) {
             var d = defs[v.champId]; if (!d) return;
-            var c = (e.champs || []).find(function (x) { return x.ChampId === v.champId; });
-            if (c) c.Valeur = v.valeur;
-            else (e.champs = e.champs || []).push({ Id: uid(), EquipementId: e.Id, ChampId: d.Id, Nom: d.Nom, Type: d.Type, Valeur: v.valeur, Ordre: d.Ordre });
+            var c = e.champs.find(function (x) { return x.ChampId === v.champId; });
+            if (c) {
+              if (v.base !== undefined && String(v.base || "") !== String(c.Valeur || "") && String(c.Valeur || "") !== String(v.valeur || "")) conflits.push({ champ: d.Nom, ancien: c.Valeur });
+              c.Valeur = v.valeur;
+            } else e.champs.push({ Id: uid(), EquipementId: e.Id, ChampId: d.Id, Nom: d.Nom, Type: d.Type, Valeur: v.valeur, Ordre: d.Ordre });
           });
-          e.champs = (e.champs || []).map(function (c) { var d = defs[c.ChampId]; if (d) { c.Nom = d.Nom; c.Type = d.Type; c.Ordre = d.Ordre; } return c; })
+          e.champs = e.champs.map(function (c) { var d = defs[c.ChampId]; if (d) { c.Nom = d.Nom; c.Type = d.Type; c.Ordre = d.Ordre; } return c; })
+            .filter(function (c) { return defs[c.ChampId]; })
             .sort(function (a, b) { return a.Ordre - b.Ordre; });
+          e.DerniereMaj = today();
           save(db);
-          return true;
+          return { ok: true, modifie: true, conflits: conflits };
+        },
+        enregistrerMouvement: function (p) {
+          var db = load();
+          var e = db.equipements.find(function (x) { return x.Id === p.id; });
+          if (!e) throw new Error("Équipement introuvable");
+          db.mouvements = db.mouvements || [];
+          if (p.opId && db.mouvements.some(function (m) { return m.OpId === p.opId; })) return { ok: true, doublon: true };
+          var statut = p.action === "repli" ? "Replié" : "À disposition";
+          if (p.action === "mise_a_disposition") {
+            e.Tranche = p.tranche || ""; e.Batiment = p.batiment || ""; e.Local = p.local || "";
+            e.EmplacementTexte = [e.Tranche ? "Tranche " + e.Tranche : "", e.Batiment, e.Local ? "Local " + e.Local : ""].filter(Boolean).join(" / ");
+          }
+          e.Statut = statut; e.DateStatut = today(); e.DerniereMaj = today();
+          var n = new Date(), pad = function (x) { return (x < 10 ? "0" : "") + x; };
+          db.mouvements.unshift({ Date: today() + " " + pad(n.getHours()) + ":" + pad(n.getMinutes()), EquipementId: e.Id, Nom: e.Nom, Action: statut,
+            Tranche: e.Tranche || "", Batiment: e.Batiment || "", Local: e.Local || "", Commentaire: p.commentaire || "", OpId: p.opId || "" });
+          save(db);
+          return { ok: true, statut: statut };
         },
         associerPuce: function (id, puce) {
           var db = load();
@@ -565,6 +902,21 @@
         uploadFichier: function (base64, filename, mime) { return "data:" + mime + ";base64," + base64; },
         envoyerAlertesMaintenant: function () { throw new Error("Envoi de mails indisponible : il faut le serveur Google (Apps Script)"); },
         activerAlertesQuotidiennes: function () { throw new Error("Activation indisponible : il faut le serveur Google (Apps Script)"); },
+        saveAlertes: function (code, cfg) {
+          var db = load(); exiger(db, code);
+          db.diffusion = cfg.diffusion || [];
+          db.alertes = { dispo: cfg.dispo, apave: cfg.apave, form: cfg.form, relance: cfg.relance || 7 };
+          db.seuilJours = cfg.form.jours;
+          save(db);
+          return true;
+        },
+        majApaveMasse: function (ids, date) {
+          var db = load(); var n = 0;
+          db.equipements.forEach(function (e) { if (ids.indexOf(e.Id) !== -1) { e.ApaveDate = date; e.DerniereMaj = today(); n++; } });
+          save(db);
+          return { ok: true, nb: n };
+        },
+        envoyerInventaire: function () { throw new Error("Envoi de mails indisponible : il faut le serveur Google (Apps Script)"); },
         saveDiffusion: function (code, emails, seuil) {
           var db = load(); exiger(db, code);
           db.diffusion = emails;
@@ -640,13 +992,14 @@
   if (INITIAL_CODE.indexOf("<" + "?") === 0) { // fichier ouvert hors Apps Script : on lit ?code= dans l'adresse
     try { INITIAL_CODE = new URLSearchParams(location.search).get("code") || ""; } catch (e) { INITIAL_CODE = ""; }
   }
-  var state = { data: { equipements: [], formulaire: [], plans: [], diffusion: [], seuilJours: 30, adminDefini: false }, adminCode: null, editingId: null, activeCategory: null, filter: null };
+  var state = { data: { equipements: [], formulaire: [], mouvements: [], plans: [], diffusion: [], seuilJours: 30, adminDefini: false }, adminCode: null, editingId: null, activeCategory: null, filter: null, fTranche: "", fBat: "" };
   var els = {};
+  var ORANO_LOGO = document.getElementById("oranoLogo").src;
   ["searchInput","scanOpenBtn","addBtn","diffusionBtn","categoryChips","grid","summaryTiles","modeBanner","storageNote",
    "alertSub","alertSendBtn","alertActivateBtn",
    "eqOverlay","eqTitle","f_nom","f_categorie","catList","f_code","readNfcBtn","scanCodeBtn","tagLinkBox","tagLink","copyTagLinkBtn",
-   "deleteEqBtn","cancelEqBtn","saveEqBtn",
-   "diffOverlay","f_seuil","diffList","addDiffBtn","cancelDiffBtn","saveDiffBtn","toast"
+   "deleteEqBtn","cancelEqBtn","saveEqBtn","f_serie",
+   "diffOverlay","diffList","addDiffBtn","cancelDiffBtn","saveDiffBtn","toast"
   ].forEach(function (id) { els[id] = document.getElementById(id); });
 
   function toast(msg, ms) {
@@ -661,43 +1014,79 @@
   });
 
   function applyMode() {
-    var labels = { apps: "Synchronisé", remote: "Synchronisé", local: "Local", demo: "Aperçu" };
-    els.storageNote.textContent = labels[MODE] || "";
     var banners = {
       local: "📴 Mode local — données stockées sur cet appareil",
-      demo: "👁 Aperçu — données d'exemple, rien n'est enregistré · code administrateur de démonstration : 1234"
+      demo: "👁 Aperçu — données d'exemple, rien n'est enregistré"
     };
     els.modeBanner.textContent = banners[MODE] || "";
     els.modeBanner.hidden = !banners[MODE];
   }
 
-  function countAlertes() {
-    var n = 0;
-    state.data.equipements.forEach(function (e) {
-      (e.champs || []).forEach(function (c) {
-        if (c.Type === "date_echeance" && c.Valeur && joursRestants(c.Valeur) <= state.data.seuilJours) n++;
-        if (c.Type === "conformite" && c.Valeur === "Non conforme") n++;
-      });
-    });
-    return n;
+  function acfg() {
+    var a = state.data.alertes || {};
+    var d = { actif: true, jours: 30, dest: [] };
+    return { dispo: a.dispo || d, apave: a.apave || d, form: a.form || { actif: true, jours: state.data.seuilJours || 30, dest: [] }, relance: a.relance || 7 };
+  }
+  // Ancienneté (en jours) de la mise à disposition d'un équipement : date du dernier statut, sinon date de pose
+  function dispoDepuis(eq) {
+    if (eq.Statut !== "À disposition") return null;
+    var d = eq.DateStatut || eq.DatePose;
+    if (!d) return null;
+    var j = Math.round((new Date().setHours(0,0,0,0) - new Date(d).setHours(0,0,0,0)) / 86400000);
+    return isNaN(j) ? null : j;
+  }
+  // État du macaron APAVE : none / ok / soon / ko
+  function apaveInfo(eq) {
+    if (!eq.ApaveDate) return { st: "none", jours: null };
+    var j = Math.round((new Date(eq.ApaveDate).setHours(0,0,0,0) - new Date().setHours(0,0,0,0)) / 86400000);
+    if (isNaN(j)) return { st: "none", jours: null };
+    return { st: j < 0 ? "ko" : (j <= acfg().apave.jours ? "soon" : "ok"), jours: j };
+  }
+  function macaronHtml(eq) {
+    var a = apaveInfo(eq), m = /^(\d{4})-(\d{2})/.exec(eq.ApaveDate || "");
+    var txt = m ? m[2] + "/" + m[1].slice(2) : "—";
+    var tit = a.st === "none" ? "Contrôle APAVE non renseigné" : (a.st === "ko" ? "Contrôle APAVE expiré" : "Contrôle APAVE valable jusqu'au " + fmtDate(eq.ApaveDate));
+    return '<span class="macaron ' + a.st + '" title="' + tit + '"><b>APAVE</b><span>' + txt + '</span></span>';
   }
 
+  function countAlertes() {
+    var c = acfg(), n = { dispo: 0, apave: 0, form: 0 };
+    state.data.equipements.forEach(function (e) {
+      if (e.Statut === "Replié") return;
+      var dj = dispoDepuis(e); if (c.dispo.actif && dj !== null && dj >= c.dispo.jours) n.dispo++;
+      var a = apaveInfo(e); if (c.apave.actif && (a.st === "ko" || a.st === "soon")) n.apave++;
+      if (!c.form.actif) return;
+      (e.champs || []).forEach(function (ch) {
+        if (ch.Type === "date_echeance" && ch.Valeur && joursRestants(ch.Valeur) <= c.form.jours) n.form++;
+        if (ch.Type === "conformite" && ch.Valeur === "Non conforme") n.form++;
+      });
+    });
+    n.total = n.dispo + n.apave + n.form;
+    return n;
+  }
+  // Liste de contrôle des alertes mail : ce qu'il reste à faire pour qu'elles partent
   function renderAlertCard() {
-    var nd = state.data.diffusion.length;
     var server = (MODE === "apps" || MODE === "remote");
-    var txt = (nd === 0 ? "aucun destinataire" : nd + " destinataire" + (nd > 1 ? "s" : "")) + " · alerte " + state.data.seuilJours + " j avant l'échéance";
-    var cls = "sub";
-    if (server && state.data.alertesActives) { txt += " · envoi automatique actif chaque jour vers 7 h"; cls += " is-ok"; }
-    else if (server) { txt += " · envoi automatique non activé"; cls += " is-warn"; }
-    else if (MODE === "demo") { txt += " · aperçu : aucun mail n'est envoyé"; }
-    else { txt += " · envoi indisponible en mode local (serveur Google requis)"; cls += " is-warn"; }
-    els.alertSub.className = cls;
-    els.alertSub.textContent = txt;
+    var nd = state.data.diffusion.length, c = acfg(), n = countAlertes();
+    function li(cls, txt) { return '<li class="' + cls + '">' + txt + '</li>'; }
+    function ligne(t, titre, detail, cnt) {
+      var spec = (c[t].dest || []).length;
+      if (!c[t].actif) return li("info", titre + " : désactivée");
+      var ok = nd || spec;
+      return li(ok ? "ok" : "todo", titre + " : " + detail + " · " + (ok ? (spec ? spec : nd) + " destinataire" + ((spec ? spec : nd) > 1 ? "s" : "") : "aucun destinataire") + " · " + cnt + " en cours");
+    }
+    var html = ligne("dispo", "Mise à disposition chantier", "plus de " + c.dispo.jours + " j", n.dispo) +
+      ligne("apave", "Contrôle APAVE", c.apave.jours + " j avant la fin de validité", n.apave) +
+      ligne("form", "Champs du formulaire", c.form.jours + " j avant l'échéance + non-conformités", n.form);
+    if (server) html += li(state.data.alertesActives ? "ok" : "todo", state.data.alertesActives ? "Envoi automatique actif : un mail par jour vers 7 h si nécessaire" : "Envoi automatique non activé");
+    else if (MODE === "demo") html += li("info", "Aperçu : aucun mail n'est envoyé");
+    else html += li("todo", "Envoi indisponible en mode local (serveur Google requis)");
+    els.alertSub.innerHTML = html;
     els.alertActivateBtn.hidden = !(server && !state.data.alertesActives);
   }
 
   els.alertSendBtn.addEventListener("click", function () {
-    if (MODE === "demo") { toast("Aperçu : " + countAlertes() + " alerte(s) seraient envoyées à " + state.data.diffusion.length + " destinataire(s)", 6000); return; }
+    if (MODE === "demo") { toast("Aperçu : " + countAlertes().total + " alerte(s) seraient envoyées à " + state.data.diffusion.length + " destinataire(s)", 6000); return; }
     if (MODE === "local") { toast("Envoi de mails indisponible en mode local : il faut le serveur Google (Apps Script)", 7000); return; }
     els.alertSendBtn.disabled = true;
     adm("envoyerAlertesMaintenant", [], function (r) {
@@ -716,17 +1105,53 @@
     }, function (err) { toast("Erreur : " + err.message, 9000); });
   });
 
-  function loadData(cb) {
+  // ---------- CHARGEMENT ET SYNCHRONISATION SÛRE ----------
+  var lastSync = null;
+  var CACHE_KEY = "oopompeCache";
+
+  function cacheSave(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {} }
+  function cacheLoad() { try { var r = localStorage.getItem(CACHE_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+
+  function renderAll() {
+    renderCategories(); renderGrid(); renderAlertCard(); renderSettings(); updateSyncUi();
+  }
+
+  var syncing = false, refreshTimer = null;
+  // Synchronisation automatique après chaque saisie ou modification : relit les données du serveur puis confirme
+  function refreshSoon(msg) {
+    clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(function () { loadData(function () { if (msg) toast(msg, 2200); }, true); }, 150);
+  }
+  function loadData(cb, silent) {
+    syncing = true; updateSyncUi();
     google.script.run.withSuccessHandler(function (data) {
-      if (!data) { toast("Chargement impossible : réponse vide du serveur", 8000); return; }
+      syncing = false;
+      if (!data) { updateSyncUi(); if (!silent) toast("Chargement impossible : réponse vide du serveur", 8000); return; }
       data.formulaire = data.formulaire || [];
+      data.mouvements = data.mouvements || [];
+      if (MODE === "apps" || MODE === "remote") cacheSave(data);
+      qLoad().forEach(function (op) { applyLocal(op, data); }); // les saisies en attente restent visibles
       state.data = data;
-      renderCategories();
-      renderGrid();
-      renderAlertCard();
+      lastSync = new Date();
+      renderAll();
       handleInitialCode();
       if (typeof cb === "function") cb();
-    }).withFailureHandler(function (err) { toast("Erreur de chargement : " + err.message); }).getData();
+    }).withFailureHandler(function (err) {
+      syncing = false;
+      if (!state.data.equipements.length) {
+        var c = cacheLoad();
+        if (c) { // hors ligne : on affiche les dernières données connues
+          c.formulaire = c.formulaire || []; c.mouvements = c.mouvements || [];
+          qLoad().forEach(function (op) { applyLocal(op, c); });
+          state.data = c; renderAll(); handleInitialCode();
+          toast("Hors ligne : dernières données connues affichées", 6000);
+          updateSyncUi(true);
+          return;
+        }
+      }
+      updateSyncUi(true);
+      if (!silent) toast("Erreur de chargement : " + err.message);
+    }).getData();
   }
 
   // ---------- LISTE / RECHERCHE ----------
@@ -736,7 +1161,32 @@
     return Object.keys(set).sort();
   }
 
+  // Filtres de situation : tranche, puis bâtiment (limité à la tranche choisie)
+  function renderLocFilters() {
+    var box = document.getElementById("locFilters");
+    var eqs = state.data.equipements, trs = {}, bats = {};
+    eqs.forEach(function (e) {
+      var t = cleanTranche(e.Tranche), b = String(e.Batiment || "").trim();
+      if (t) trs[t] = true;
+      if (b && (!state.fTranche || t === state.fTranche)) bats[b] = true;
+    });
+    var T = Object.keys(trs).sort(function (a, b) { return a.localeCompare(b, "fr", { numeric: true }); });
+    var B = Object.keys(bats).sort(function (a, b) { return a.localeCompare(b, "fr", { numeric: true }); });
+    if (state.fTranche && T.indexOf(state.fTranche) === -1) state.fTranche = "";
+    if (state.fBat && B.indexOf(state.fBat) === -1) state.fBat = "";
+    function sel(id, label, opts, val) {
+      return '<select id="' + id + '" class="' + (val ? "is-set" : "") + '" aria-label="' + label + '"><option value="">' + label + ' : toutes</option>' +
+        opts.map(function (o) { return '<option value="' + escapeHtml(o) + '"' + (o === val ? " selected" : "") + '>' + (id === "fTr" ? "Tranche " : "") + escapeHtml(o) + '</option>'; }).join("") + '</select>';
+    }
+    box.hidden = !(T.length || B.length);
+    box.innerHTML = sel("fTr", "Tranche", T, state.fTranche) + sel("fBat", "Bâtiment", B, state.fBat);
+    document.getElementById("fTr").onchange = function () { state.fTranche = this.value; renderLocFilters(); renderGrid(); };
+    document.getElementById("fBat").onchange = function () { state.fBat = this.value; renderLocFilters(); renderGrid(); };
+  }
+
   function renderCategories() {
+    renderLocFilters();
+    els.categoryChips.hidden = categories().length < 2;
     els.categoryChips.innerHTML = "";
     var all = document.createElement("button");
     all.type = "button";
@@ -792,12 +1242,19 @@
 
   function champStatus(eq) {
     var today = new Date(); today.setHours(0,0,0,0);
-    var out = { warn: false, danger: false, overdue: false, nonConforme: false, next: null };
+    var out = { warn: false, danger: false, overdue: false, nonConforme: false, next: null, apave: "", dispoLong: null };
+    if (eq.Statut === "Replié") return out; // équipement replié : aucune alerte
+    var cf = acfg();
+    var ap = apaveInfo(eq);
+    if (cf.apave.actif && ap.st === "ko") { out.danger = true; out.apave = "ko"; }
+    else if (cf.apave.actif && ap.st === "soon") { out.warn = true; out.apave = "soon"; }
+    var dj = dispoDepuis(eq);
+    if (cf.dispo.actif && dj !== null && dj >= cf.dispo.jours) { out.warn = true; out.dispoLong = dj; }
     (eq.champs || []).forEach(function (c) {
       if (c.Type === "date_echeance" && c.Valeur) {
         var j = Math.round((new Date(c.Valeur) - today) / 86400000);
         if (!out.next || j < out.next.jours) out.next = { nom: c.Nom, valeur: c.Valeur, jours: j };
-        if (j <= state.data.seuilJours) out.warn = true;
+        if (j <= state.data.seuilJours) { out.warn = true; out.ech = true; }
         if (j < 0) { out.danger = true; out.overdue = true; }
       }
       if (c.Type === "conformite" && c.Valeur === "Non conforme") { out.danger = true; out.nonConforme = true; }
@@ -807,18 +1264,31 @@
 
   function catIcon(cat) {
     var c = (cat || "").toLowerCase();
-    if (c.indexOf("pompe") !== -1) return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>';
+    if (c.indexOf("pompe") !== -1 || c.indexOf("hydrau") !== -1) return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>';
     if (c.indexOf("moteur") !== -1) return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z" fill="currentColor"/></svg>';
     return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>';
   }
 
+  function statutKey(eq) { return eq.Statut === "À disposition" ? "dispo" : (eq.Statut === "Replié" ? "repli" : ""); }
+  function lastMv(id) {
+    return (state.data.mouvements || []).find(function (m) { return m.EquipementId === id; });
+  }
+  function fmtDateTime(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})(?: (\d{2}:\d{2}))?/.exec(s || "");
+    return m ? m[3] + "/" + m[2] + (m[4] ? " " + m[4] : "") : (s || "");
+  }
+
   function renderSummary() {
-    var all = state.data.equipements, warn = 0, danger = 0;
-    all.forEach(function (e) { var s = champStatus(e); if (s.danger) danger++; else if (s.warn) warn++; });
+    var all = state.data.equipements, warn = 0, danger = 0, dispo = 0, repli = 0;
+    all.forEach(function (e) {
+      var k = statutKey(e); if (k === "dispo") dispo++; if (k === "repli") repli++;
+      var s = champStatus(e); if (s.danger) danger++; else if (s.warn) warn++;
+    });
     var defs = [
       { key: null, n: all.length, l: "Équipements", cls: "" },
-      { key: "warn", n: warn, l: "Échéance proche", cls: "t-warn" },
-      { key: "danger", n: danger, l: "À traiter", cls: "t-danger" }
+      { key: "dispo", n: dispo, l: "À disposition", cls: "t-ok" },
+      { key: "danger", n: danger + warn, l: "En alerte", cls: danger ? "t-danger" : "t-warn" },
+      { key: "repli", n: repli, l: "Repliées", cls: "" }
     ];
     els.summaryTiles.innerHTML = "";
     defs.forEach(function (d) {
@@ -836,58 +1306,58 @@
     var q = (els.searchInput.value || "").toLowerCase().trim();
     var list = state.data.equipements.filter(function (e) {
       if (state.activeCategory && e.Categorie !== state.activeCategory) return false;
-      var st = champStatus(e);
-      if (state.filter === "warn" && !(st.warn && !st.danger)) return false;
-      if (state.filter === "danger" && !st.danger) return false;
+      if (state.fTranche && cleanTranche(e.Tranche) !== state.fTranche) return false;
+      if (state.fBat && String(e.Batiment || "").trim() !== state.fBat) return false;
+      var st = champStatus(e), k = statutKey(e);
+      if (state.filter === "dispo" && k !== "dispo") return false;
+      if (state.filter === "repli" && k !== "repli") return false;
+      if (state.filter === "danger" && !(st.danger || st.warn)) return false;
       if (!q) return true;
-      return (e.Nom + " " + e.Categorie + " " + e.CodeRFID + " " + lieu(e) + " " + (e.Commentaires || "")).toLowerCase().indexOf(q) !== -1;
+      return (e.Nom + " " + e.Categorie + " " + e.CodeRFID + " " + (e.NumeroSerie || "") + " " + lieu(e) + " " + (e.Commentaires || "") + " " + (e.Statut || "")).toLowerCase().indexOf(q) !== -1;
     });
     els.grid.innerHTML = "";
     if (list.length === 0) {
-      els.grid.innerHTML = '<div class="empty-state">Aucun équipement à afficher.<br>' + (isAdmin() ? 'Utilisez « + Ajouter un équipement ».' : 'Demandez à l\'administrateur de créer les équipements.') + '</div>';
+      els.grid.innerHTML = '<div class="empty-state">Aucun équipement à afficher.<br>' + 'Utilisez « + Nouvel équipement ».' + '</div>';
       return;
     }
     list.forEach(function (eq) {
-      var st = champStatus(eq);
-      var badges = "";
-      if (st.overdue) badges += '<span class="badge alert">échéance dépassée</span>';
-      if (st.nonConforme) badges += '<span class="badge alert">non conforme</span>';
-      if (!st.danger && st.warn) badges += '<span class="badge warn">échéance proche</span>';
-      if (!st.danger && !st.warn && st.next) badges += '<span class="badge ok">à jour</span>';
-      var nextTxt = "Aucune échéance renseignée", nextCls = "";
-      if (st.next) {
-        var j = st.next.jours;
-        nextTxt = st.next.nom + " : " + fmtDate(st.next.valeur) + (j < 0 ? " (dépassée de " + Math.abs(j) + " j)" : " (dans " + j + " j)");
-        nextCls = j < 0 ? " is-alert" : (j <= state.data.seuilJours ? " is-warn" : "");
-      }
+      var st = champStatus(eq), k = statutKey(eq);
+      var badges2 = "";
+      if (st.nonConforme) badges2 += '<span class="badge alert">non conforme</span>';
+      if (st.overdue) badges2 += '<span class="badge alert">échéance dépassée</span>';
+      else if (st.ech) badges2 += '<span class="badge warn">échéance proche</span>';
+      if (st.dispoLong !== null) badges2 += '<span class="badge warn">à disposition depuis ' + st.dispoLong + ' j</span>';
+      var ap = apaveInfo(eq);
       var card = document.createElement("div");
-      card.className = "card" + (eq.example ? " is-example" : "") + (st.danger ? " is-danger" : "");
+      card.className = "card" + (k ? " st-" + k : "") + (st.danger ? " is-danger" : "");
       card.innerHTML =
-        '<div class="card-top"><div><div class="name">' + escapeHtml(eq.Nom) + '</div>' +
-          '<span class="card-cat"><span class="cat-badge">' + catIcon(eq.Categorie) + '</span>' + escapeHtml(eq.Categorie || "Sans catégorie") + '</span></div>' +
-          '<div class="card-badges">' + badges + '</div></div>' +
-        '<div class="card-code mono">' + escapeHtml(eq.CodeRFID || "sans puce associée") + '</div>' +
+        '<div class="card-top"><div class="name">' + escapeHtml(eq.Nom) + '</div>' +
+          (k === "dispo" ? '<span class="badge dispo">à disposition</span>' : (k === "repli" ? '<span class="badge repli">repliée</span>' : '')) + '</div>' +
         '<div class="card-loc"><span class="locpin">◈</span><span class="val">' + escapeHtml(lieu(eq) || "Localisation à renseigner") + '</span></div>' +
-        '<div class="card-line' + nextCls + '">' + escapeHtml(nextTxt) + '</div>' +
-        (eq.DatePose ? '<div class="card-line">Posé le ' + escapeHtml(fmtDate(eq.DatePose)) + '</div>' : '') +
-        (eq.Commentaires ? '<div class="card-comment">💬 ' + escapeHtml(eq.Commentaires) + '</div>' : '') +
-        (eq.example ? '<div class="card-example-tag">(exemple) — à modifier ou supprimer</div>' : '') +
-        '<div class="card-meta"><span></span><span>' + escapeHtml(agoText(eq.DerniereMaj)) + '</span></div>' +
-        '<div class="card-actions"><button type="button" class="btn" data-role="suiviBtn">📋 Suivi terrain</button>' +
-        (eq.CodeRFID ? '' : '<button type="button" class="btn" data-role="assocBtn">📡 Associer la puce</button>') +
-        '<button type="button" class="btn admin-only" data-role="editBtn">Modifier</button></div>';
-      card.querySelector("[data-role=suiviBtn]").addEventListener("click", function () { openSuiviTerrain(eq); });
+        '<div class="card-apave">' + macaronHtml(eq) + '<div class="tx"><b>' + (eq.ApaveDate ? fmtDate(eq.ApaveDate) : "Non renseigné") + '</b>' +
+          (eq.ApaveDate ? (ap.st === "ko" ? "contrôle APAVE expiré" : "contrôle APAVE valable jusqu'au") : "contrôle APAVE") + '</div></div>' +
+        (badges2 ? '<div class="card-badges-row">' + badges2 + '</div>' : '') +
+        (eq.CodeRFID ? '' : '<div class="card-actions"><button type="button" class="btn" data-role="assocBtn">📡 Associer la puce</button></div>');
+      card.addEventListener("click", function () { openActions(eq); });
       var assocBtn = card.querySelector("[data-role=assocBtn]");
-      if (assocBtn) assocBtn.addEventListener("click", function () {
-        startNfc(assocBtn, "📡 Associer la puce", function (uid) {
-          var dupe = state.data.equipements.find(function (e) { return e.Id !== eq.Id && norm(e.CodeRFID) === norm(uid); });
-          if (dupe) { toast("Cette puce est déjà associée à « " + dupe.Nom + " »", 8000); return; }
-          google.script.run.withSuccessHandler(function () { toast("Puce associée à « " + eq.Nom + " »"); loadData(); })
-            .withFailureHandler(function (err) { toast("Erreur : " + err.message, 8000); }).associerPuce(eq.Id, uid);
-        });
+      if (assocBtn) assocBtn.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        startNfc(assocBtn, "📡 Associer la puce", function (uid) { associer(eq, uid); });
       });
-      card.querySelector("[data-role=editBtn]").addEventListener("click", function () { openEquipement(eq); });
       els.grid.appendChild(card);
+    });
+  }
+
+  // Association d'une puce à un équipement (opérateur ou administrateur) ; mise en file si le réseau est coupé
+  function associer(eq, uid, done) {
+    var dupe = state.data.equipements.find(function (e) { return e.Id !== eq.Id && norm(e.CodeRFID) === norm(uid); });
+    if (dupe) { toast("Cette puce est déjà associée à « " + dupe.Nom + " »", 8000); return; }
+    writeOp("associerPuce", [eq.Id, uid], function (err) {
+      if (err) { toast("Erreur : " + err.message, 8000); return; }
+      eq.CodeRFID = uid;
+      toast("Puce associée à « " + eq.Nom + " » : " + uid);
+      if (done) done();
+      loadData(null, true);
     });
   }
 
@@ -906,13 +1376,14 @@
     state.adminCode = code || null;
     try { if (code) sessionStorage.setItem("suiviAdminCode", code); else sessionStorage.removeItem("suiviAdminCode"); } catch (e) {}
     document.body.classList.toggle("is-admin", isAdmin());
-    document.getElementById("adminBtn").textContent = isAdmin() ? "🔓 Quitter le mode administrateur" : "🔒 Administrateur";
+    
     renderGrid();
+    renderSettings();
   }
 
   // Appel d'une fonction réservée à l'administrateur : le code part en premier argument et est revérifié par le serveur
   function adm(name, args, ok, ko) {
-    var r = google.script.run.withSuccessHandler(ok || function () {}).withFailureHandler(function (err) {
+    var r = google.script.run.withSuccessHandler(function (res) { (ok || function () {})(res); refreshSoon("✔ Modification synchronisée"); }).withFailureHandler(function (err) {
       var msg = (err && err.message) || String(err);
       var refuse = /Code administrateur incorrect/.test(msg);
       if (refuse) { setAdmin(null); toast("Code administrateur refusé : retour au mode opérateur", 7000); }
@@ -931,7 +1402,7 @@
     adminMode = mode;
     var t = { login: "Mode administrateur", setup: "Définir le code administrateur", change: "Changer le code administrateur" };
     var h = {
-      login: "Le mode administrateur permet de créer les équipements, de configurer le formulaire de saisie et de régler les alertes mail.",
+      login: "Le mode administrateur permet de configurer le formulaire de saisie, de régler les alertes et d'envoyer les rapports par mail.",
       setup: "Aucun code administrateur n'est encore défini : choisissez-le maintenant. Il protège la configuration ; conservez-le précieusement.",
       change: "Saisissez le code actuel puis le nouveau code."
     };
@@ -1032,12 +1503,13 @@
 
   // ---------- ADMIN : IDENTIFICATION D'UN ÉQUIPEMENT (nom, catégorie, puce) ----------
   function openEquipement(eq, presetCode) {
-    if (!isAdmin()) { toast("Réservé à l'administrateur"); return; }
     state.editingId = eq ? eq.Id : null;
     els.eqTitle.textContent = eq ? "Modifier l'identification" : "Nouvel équipement";
     els.f_nom.value = eq ? eq.Nom : "";
     els.f_categorie.value = eq ? (eq.Categorie || "") : "";
+    els.f_serie.value = eq ? (eq.NumeroSerie || "") : "";
     els.f_code.value = eq ? (eq.CodeRFID || "") : (presetCode || "");
+    els.f_code.readOnly = !!(eq && eq.CodeRFID && !isAdmin()); // remplacer une puce déjà associée : administrateur
     els.deleteEqBtn.style.display = eq ? "inline-block" : "none";
     els.eqOverlay.hidden = false;
   }
@@ -1061,9 +1533,9 @@
     var nom = els.f_nom.value.trim();
     if (!nom) { toast("Le nom est obligatoire"); return; }
     var creation = !state.editingId;
-    var payload = { id: state.editingId, nom: nom, categorie: els.f_categorie.value.trim(), codeRFID: els.f_code.value.trim() };
+    var payload = { id: state.editingId, clientId: state.editingId ? undefined : uid(), nom: nom, categorie: els.f_categorie.value.trim(), numeroSerie: els.f_serie.value.trim(), codeRFID: els.f_code.value.trim() };
     els.saveEqBtn.disabled = true;
-    adm("saveEquipement", [payload], function (r) {
+    var run = google.script.run.withSuccessHandler(function (r) {
       els.saveEqBtn.disabled = false;
       closeEquipement();
       loadData(function () {
@@ -1073,7 +1545,8 @@
         }
         toast("Équipement enregistré");
       });
-    }, function (err) { els.saveEqBtn.disabled = false; toast("Erreur : " + err.message, 8000); });
+    }).withFailureHandler(function (err) { els.saveEqBtn.disabled = false; toast("Erreur : " + err.message + (isNetworkError(err) ? " (la création demande une connexion)" : ""), 8000); });
+    run.saveEquipement(payload, state.adminCode);
   });
 
   // ---------- PUCE NFC = LIEN VERS L'EQUIPEMENT ----------
@@ -1091,7 +1564,7 @@
     if (initialHandled || !INITIAL_CODE) return;
     initialHandled = true;
     var eq = findByCode(INITIAL_CODE);
-    if (eq) openSuiviTerrain(eq);
+    if (eq) openActions(eq);
     else toast("Aucun équipement associé au code " + INITIAL_CODE);
   }
 
@@ -1117,7 +1590,7 @@
   els.searchInput.addEventListener("keydown", function (e) {
     if (e.key !== "Enter") return;
     var eq = findByCode(els.searchInput.value);
-    if (eq) { els.searchInput.value = ""; renderGrid(); openSuiviTerrain(eq); }
+    if (eq) { els.searchInput.value = ""; renderGrid(); openActions(eq); }
   });
 
   // ---------- LECTURE DE LA PUCE (Web NFC : Chrome sur Android, page en https:// hors iframe) ----------
@@ -1137,12 +1610,14 @@
       nfcActive.btn.classList.remove("is-listening");
       nfcActive.btn.textContent = nfcActive.label;
       nfcActive = null;
+      if (perm.wanted) startPermanent(false); // fin d'une lecture ponctuelle : reprise de l'écoute permanente
     }
   }
 
   function startNfc(btn, label, onSerial) {
     if (nfcActive && nfcActive.btn === btn) { stopNfc(); return; } // 2e clic = annuler
     stopNfc();
+    pausePermanent(); // une seule lecture NFC à la fois
     var why = nfcUnavailableReason();
     if (why) { toast(why, 9000); return; }
     var ctrl = new AbortController();
@@ -1175,17 +1650,191 @@
     });
   });
 
-  // En-tête : scanner une puce pour ouvrir son équipement (ou en créer un si elle est inconnue)
+  // ---------- ÉCOUTE PERMANENTE : approcher une puce ouvre directement la fiche de l'équipement ----------
+  var perm = { ctrl: null, wanted: false };
+
+  function overlayOpen() {
+    return Array.prototype.some.call(document.querySelectorAll(".panel-overlay"), function (o) { return !o.hidden; });
+  }
+
+  function setScanUi(on) {
+    els.scanOpenBtn.classList.toggle("is-listening", on);
+    els.scanOpenBtn.querySelector(".lb").textContent = on ? "Scan actif" : "Scanner";
+  }
+
+  // Puce lue : fiche de l'équipement si elle est connue, sinon choix de l'équipement à lui associer
+  function onScanUid(uid) {
+    var eq = findByCode(uid);
+    if (eq) { toast("Puce " + uid + " : " + eq.Nom, 3000); openActions(eq); return; }
+    toast("Puce " + uid + " non associée à un équipement", 5000);
+    openPick(uid);
+  }
+
+  function startPermanent(interactive) {
+    if (perm.ctrl || nfcActive) return;
+    var why = nfcUnavailableReason();
+    if (why) { if (interactive) toast(why, 9000); return; }
+    var ctrl = new AbortController();
+    perm.ctrl = ctrl;
+    var reader = new NDEFReader();
+    reader.scan({ signal: ctrl.signal }).then(function () {
+      setScanUi(true);
+      reader.onreading = function (ev) {
+        var uid = (ev.serialNumber || "").toUpperCase();
+        if (!uid || overlayOpen()) return; // une fiche est déjà ouverte : on ne la remplace pas
+        onScanUid(uid);
+      };
+      reader.onreadingerror = function () { toast("Puce détectée mais illisible, réessayez", 6000); };
+    }).catch(function (err) {
+      if (perm.ctrl === ctrl) perm.ctrl = null;
+      setScanUi(false);
+      if (interactive) toast("Lecture NFC impossible : " + ((err && err.name) ? err.name + " - " : "") + ((err && err.message) || err), 9000);
+    });
+  }
+
+  function pausePermanent() {
+    if (perm.ctrl) { try { perm.ctrl.abort(); } catch (e) {} perm.ctrl = null; }
+    setScanUi(false);
+  }
+
   els.scanOpenBtn.addEventListener("click", function () {
-    startNfc(els.scanOpenBtn, "📡 Scanner", function (uid) {
-      var eq = findByCode(uid);
-      if (eq) { openSuiviTerrain(eq); return; }
-      openPick(uid);
+    if (perm.ctrl || perm.wanted) { perm.wanted = false; pausePermanent(); toast("Scan arrêté"); return; }
+    perm.wanted = true;
+    startPermanent(true);
+    if (!nfcUnavailableReason()) toast("Scan actif : approchez une puce de la tablette", 4000);
+    else perm.wanted = false;
+  });
+
+  // Reprise automatique au retour sur la page (Chrome suspend la lecture NFC quand la page passe en arrière-plan)
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && perm.wanted) { pausePermanent(); startPermanent(false); }
+  });
+
+  // Si Chrome a déjà l'autorisation NFC pour ce site, l'écoute démarre toute seule à l'ouverture de la page
+  try {
+    if (!nfcUnavailableReason() && navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({ name: "nfc" }).then(function (p) {
+        if (p.state === "granted") { perm.wanted = true; startPermanent(false); }
+      }).catch(function () {});
+    }
+  } catch (e) {}
+
+  // ---------- ACTIONS APRÈS SCAN : mise à disposition / repli / suivi ----------
+  var actEq = null;
+  // Raisons pour lesquelles l'équipement est « en alerte » (ou en échéance proche)
+  function alertReasons(eq) {
+    var out = [], c = acfg();
+    if (eq.Statut === "Replié") return out;
+    var ap = apaveInfo(eq);
+    if (c.apave.actif && ap.st === "ko") out.push({ lvl: "danger", txt: "Contrôle APAVE expiré depuis " + Math.abs(ap.jours) + " j (" + fmtDate(eq.ApaveDate) + ")" });
+    else if (c.apave.actif && ap.st === "soon") out.push({ lvl: "warn", txt: "Contrôle APAVE à renouveler : expire dans " + ap.jours + " j (" + fmtDate(eq.ApaveDate) + ")" });
+    var dj = dispoDepuis(eq);
+    if (c.dispo.actif && dj !== null && dj >= c.dispo.jours) out.push({ lvl: "warn", txt: "À disposition depuis " + dj + " j (seuil : " + c.dispo.jours + " j)" });
+    (eq.champs || []).forEach(function (ch) {
+      if (ch.Type === "date_echeance" && ch.Valeur) {
+        var j = joursRestants(ch.Valeur);
+        if (j < 0) out.push({ lvl: "danger", txt: ch.Nom + " dépassée de " + Math.abs(j) + " j (" + fmtDate(ch.Valeur) + ")" });
+        else if (j <= state.data.seuilJours) out.push({ lvl: "warn", txt: ch.Nom + " dans " + j + " j (" + fmtDate(ch.Valeur) + ")" });
+      }
+      if (ch.Type === "conformite" && ch.Valeur === "Non conforme") out.push({ lvl: "danger", txt: ch.Nom + " : non conforme" });
+    });
+    return out;
+  }
+  function renderActAlerts(eq) {
+    var r = alertReasons(eq), box = document.getElementById("actAlerts");
+    if (!r.length) { box.innerHTML = ""; return; }
+    var danger = r.some(function (x) { return x.lvl === "danger"; });
+    box.innerHTML = '<div class="alertBox ' + (danger ? "danger" : "warn") + '"><b>' + (danger ? "⚠ Équipement en alerte" : "⏳ À surveiller") + '</b><ul>' +
+      r.map(function (x) { return "<li>" + escapeHtml(x.txt) + "</li>"; }).join("") + "</ul></div>";
+  }
+
+  // Informations générales : ce qui a été saisi au dernier formulaire (seules les valeurs renseignées s'affichent)
+  function renderActSummary(eq) {
+    var items = [];
+    function add(k, v, cls, full) { if (v !== "" && v != null) items.push('<div class="it' + (full ? " full" : "") + '"><div class="k">' + escapeHtml(k) + '</div><div class="v ' + (cls || "") + '">' + v + '</div></div>'); }
+    var ap = apaveInfo(eq);
+    if (eq.ApaveDate) add("Contrôle APAVE", escapeHtml(fmtDate(eq.ApaveDate)) + (ap.st === "ko" ? " · expiré" : ""), ap.st === "ko" ? "bad" : (ap.st === "soon" ? "soon" : "good"));
+    add("N° de série", escapeHtml(eq.NumeroSerie || ""));
+    add("Date de pose", eq.DatePose ? escapeHtml(fmtDate(eq.DatePose)) : "");
+    (state.data.formulaire || []).forEach(function (f) {
+      var v = valeurChamp(eq, f);
+      if (!v) return;
+      var cls = "", txt = escapeHtml(v);
+      if (f.Type === "date" || f.Type === "date_echeance") {
+        txt = escapeHtml(fmtDate(v));
+        if (f.Type === "date_echeance") { var j = joursRestants(v); if (j < 0) { cls = "bad"; txt += " · dépassée"; } else if (j <= state.data.seuilJours) cls = "soon"; }
+      } else if (f.Type === "conformite") cls = v === "Non conforme" ? "bad" : "good";
+      else if (f.Type === "fichier") txt = /^(https?:|data:)/.test(v) ? '<a href="' + escapeHtml(v) + '" target="_blank" rel="noopener">Ouvrir le document</a>' : escapeHtml(v);
+      add(f.Nom, txt, cls);
+    });
+    add("Commentaires", escapeHtml(eq.Commentaires || ""), "", true);
+    if (items.length && eq.DerniereMaj) items.push('<div class="maj">' + escapeHtml(agoText(eq.DerniereMaj)) + '</div>');
+    document.getElementById("actSummary").innerHTML = items.join("");
+  }
+
+  function openActions(eq) {
+    actEq = eq;
+    document.getElementById("actTitle").textContent = eq.Nom;
+    var k = statutKey(eq);
+    document.getElementById("actInfo").textContent =
+      (k === "dispo" ? "À disposition" : (k === "repli" ? "Repliée" : "Statut non renseigné")) +
+      (eq.DateStatut ? " depuis le " + fmtDate(eq.DateStatut) : "") + " · " + (lieu(eq) || "localisation à renseigner") + " · " + (eq.CodeRFID || "sans puce");
+    renderActAlerts(eq);
+    renderActSummary(eq);
+    var h = (state.data.mouvements || []).filter(function (m) { return m.EquipementId === eq.Id; }).slice(0, 3);
+    document.getElementById("actHistory").innerHTML = h.map(function (m) {
+      return "<div>" + (m.Action === "Replié" ? "↩ Repli" : "📦 Mise à disposition") + " · " + escapeHtml(fmtDateTime(m.Date)) +
+        (m.Action !== "Replié" && (m.Tranche || m.Batiment || m.Local) ? " · " + escapeHtml(lieuTexte(m.Tranche, m.Batiment, m.Local)) : "") +
+        (m.Commentaire ? " · " + escapeHtml(m.Commentaire) : "") + "</div>";
+    }).join("");
+    document.getElementById("actionOverlay").hidden = false;
+  }
+  function closeActions() { document.getElementById("actionOverlay").hidden = true; }
+  document.getElementById("cancelActBtn").addEventListener("click", closeActions);
+  document.getElementById("actionOverlay").addEventListener("click", function (e) { if (e.target === this) closeActions(); });
+  document.getElementById("actDispoBtn").addEventListener("click", function () { var eq = actEq; closeActions(); openMouvement(eq, "mise_a_disposition"); });
+  document.getElementById("actRepliBtn").addEventListener("click", function () { var eq = actEq; closeActions(); openMouvement(eq, "repli"); });
+  document.getElementById("actSuiviBtn").addEventListener("click", function () { var eq = actEq; closeActions(); openSuiviTerrain(eq); });
+  document.getElementById("actEditLink").addEventListener("click", function (e) { e.preventDefault(); var eq = actEq; closeActions(); openEquipement(eq); });
+
+  var mvEq = null, mvAction = null;
+  function openMouvement(eq, action) {
+    mvEq = eq; mvAction = action;
+    var repli = action === "repli";
+    document.getElementById("mvTitle").textContent = (repli ? "Repli — " : "Mise à disposition — ") + eq.Nom;
+    document.getElementById("mvLieuBox").hidden = repli;
+    document.getElementById("m_tranche").value = eq.Tranche || "";
+    document.getElementById("m_batiment").value = eq.Batiment || "";
+    document.getElementById("m_local").value = eq.Local || "";
+    document.getElementById("m_commentaire").value = "";
+    document.getElementById("mvOverlay").hidden = false;
+  }
+  function closeMv() { document.getElementById("mvOverlay").hidden = true; }
+  document.getElementById("cancelMvBtn").addEventListener("click", closeMv);
+  document.getElementById("mvOverlay").addEventListener("click", function (e) { if (e.target === this) closeMv(); });
+  document.getElementById("okMvBtn").addEventListener("click", function () {
+    var btn = this, repli = mvAction === "repli";
+    var p = {
+      id: mvEq.Id, action: mvAction,
+      tranche: cleanTranche(document.getElementById("m_tranche").value),
+      batiment: document.getElementById("m_batiment").value.trim(),
+      local: cleanLocal(document.getElementById("m_local").value),
+      commentaire: document.getElementById("m_commentaire").value.trim(),
+      opId: uid()
+    };
+    if (!repli && !p.tranche && !p.batiment && !p.local) { toast("Indiquez au moins la tranche, le bâtiment ou le local"); return; }
+    btn.disabled = true;
+    writeOp("enregistrerMouvement", [p], function (err, r) {
+      btn.disabled = false;
+      if (err) { toast("Erreur : " + err.message, 8000); return; }
+      closeMv();
+      toast(repli ? "Repli enregistré" : "Mise à disposition enregistrée");
+      if (!(r && r.queued)) loadData(null, true); else renderAll();
     });
   });
 
-  // ---------- SUIVI TERRAIN : formulaire configuré par l'administrateur (ouvert par scan) ----------
-  var suiviEq = null;
+  // ---------- SUIVI : formulaire configuré par l'administrateur ----------
+  var suiviEq = null, suiviBase = null;
 
   function joursRestants(dateStr) {
     var today = new Date(); today.setHours(0,0,0,0);
@@ -1194,7 +1843,7 @@
 
   function valeurChamp(eq, f) {
     var c = (eq.champs || []).find(function (x) { return x.ChampId === f.Id; });
-    return c ? (c.Valeur == null ? "" : c.Valeur) : "";
+    return c ? (c.Valeur == null ? "" : String(c.Valeur)) : "";
   }
 
   function suiviFieldHtml(f, valeur) {
@@ -1230,6 +1879,43 @@
     document.getElementById("s_assocBtn").hidden = !!suiviEq.CodeRFID;
   }
 
+  // Brouillon : ce qui est tapé reste sur l'appareil tant que le formulaire n'est pas enregistré ou annulé
+  function draftKey(id) { return "oopompeDraft:" + id; }
+  function suiviSnapshot() {
+    var snap = { eq: {
+      tranche: cleanTranche(document.getElementById("s_tranche").value),
+      batiment: document.getElementById("s_batiment").value.trim(),
+      local: cleanLocal(document.getElementById("s_local").value),
+      datePose: document.getElementById("s_datePose").value || "",
+      numeroSerie: document.getElementById("s_serie").value.trim(),
+      apave: document.getElementById("s_apave").value || "",
+      commentaires: document.getElementById("s_commentaires").value.trim()
+    }, vals: {} };
+    Array.prototype.forEach.call(document.querySelectorAll("#suiviChampsList [data-fid]"), function (inp) {
+      if (inp.type !== "file") snap.vals[inp.dataset.fid] = inp.value;
+    });
+    return snap;
+  }
+  function suiviDiff() {
+    var cur = suiviSnapshot(), eqChanged = {}, baseSent = {}, valeurs = [];
+    Object.keys(cur.eq).forEach(function (k) {
+      if (cur.eq[k] !== suiviBase.eq[k]) { eqChanged[k] = cur.eq[k]; baseSent[k] = suiviBase.eq[k]; }
+    });
+    Object.keys(cur.vals).forEach(function (fid) {
+      if (cur.vals[fid] !== suiviBase.vals[fid]) valeurs.push({ champId: fid, valeur: cur.vals[fid], base: suiviBase.vals[fid] });
+    });
+    return { eq: eqChanged, base: baseSent, valeurs: valeurs };
+  }
+  function saveDraft() {
+    if (!suiviEq) return;
+    try {
+      var d = suiviDiff();
+      if (!Object.keys(d.eq).length && !d.valeurs.length) localStorage.removeItem(draftKey(suiviEq.Id));
+      else localStorage.setItem(draftKey(suiviEq.Id), JSON.stringify(suiviSnapshot()));
+    } catch (e) {}
+  }
+  function clearDraft(id) { try { localStorage.removeItem(draftKey(id)); } catch (e) {} }
+
   function openSuiviTerrain(eq) {
     suiviEq = eq;
     document.getElementById("suiviTitle").textContent = eq.Nom;
@@ -1237,18 +1923,40 @@
     document.getElementById("s_batiment").value = eq.Batiment || "";
     document.getElementById("s_local").value = eq.Local || "";
     document.getElementById("s_datePose").value = eq.DatePose || "";
+    document.getElementById("s_serie").value = eq.NumeroSerie || "";
+    document.getElementById("s_apave").value = eq.ApaveDate || "";
     document.getElementById("s_commentaires").value = eq.Commentaires || "";
     renderPuceBox();
     var form = state.data.formulaire || [];
     document.getElementById("suiviChampsList").innerHTML = form.map(function (f) {
       return suiviFieldHtml(f, valeurChamp(eq, f));
     }).join("");
+    suiviBase = suiviSnapshot(); // valeurs de départ : sert à n'envoyer que ce qui change
+    try {
+      var raw = localStorage.getItem(draftKey(eq.Id));
+      if (raw) {
+        var d = JSON.parse(raw);
+        document.getElementById("s_tranche").value = d.eq.tranche;
+        document.getElementById("s_batiment").value = d.eq.batiment;
+        document.getElementById("s_local").value = d.eq.local;
+        document.getElementById("s_datePose").value = d.eq.datePose;
+        if (d.eq.numeroSerie !== undefined) document.getElementById("s_serie").value = d.eq.numeroSerie;
+        if (d.eq.apave !== undefined) document.getElementById("s_apave").value = d.eq.apave;
+        document.getElementById("s_commentaires").value = d.eq.commentaires;
+        Array.prototype.forEach.call(document.querySelectorAll("#suiviChampsList [data-fid]"), function (inp) {
+          if (inp.type !== "file" && d.vals && d.vals[inp.dataset.fid] !== undefined) inp.value = d.vals[inp.dataset.fid];
+        });
+        toast("Brouillon restauré : saisie non enregistrée", 5000);
+      }
+    } catch (e) {}
     document.getElementById("suiviOverlay").hidden = false;
   }
 
   function closeSuivi() { document.getElementById("suiviOverlay").hidden = true; stopNfc(); }
-  document.getElementById("cancelSuiviBtn").addEventListener("click", closeSuivi);
-  document.getElementById("suiviOverlay").addEventListener("click", function (e) { if (e.target === this) closeSuivi(); });
+  document.getElementById("cancelSuiviBtn").addEventListener("click", function () { if (suiviEq) clearDraft(suiviEq.Id); closeSuivi(); });
+  document.getElementById("suiviOverlay").addEventListener("click", function (e) { if (e.target === this) closeSuivi(); }); // brouillon conservé
+  document.getElementById("suiviOverlay").addEventListener("input", saveDraft);
+  document.getElementById("suiviOverlay").addEventListener("change", saveDraft);
   document.getElementById("suiviFullEditLink").addEventListener("click", function (e) {
     e.preventDefault();
     var eq = suiviEq;
@@ -1256,67 +1964,51 @@
     openEquipement(eq);
   });
 
-  // Association d'une puce à l'équipement ouvert (opérateur ou administrateur)
+  // Association d'une puce à l'équipement ouvert
   document.getElementById("s_assocBtn").addEventListener("click", function () {
     var btn = this;
     startNfc(btn, "📡 Associer la puce", function (uid) {
-      var dupe = state.data.equipements.find(function (e) { return e.Id !== suiviEq.Id && norm(e.CodeRFID) === norm(uid); });
-      if (dupe) { toast("Cette puce est déjà associée à « " + dupe.Nom + " »", 8000); return; }
-      google.script.run.withSuccessHandler(function () {
-        suiviEq.CodeRFID = uid;
-        renderPuceBox();
-        toast("Puce associée : " + uid);
-        loadData();
-      }).withFailureHandler(function (err) { toast("Erreur : " + err.message, 8000); }).associerPuce(suiviEq.Id, uid);
+      associer(suiviEq, uid, renderPuceBox);
     });
   });
 
   document.getElementById("saveSuiviBtn").addEventListener("click", function () {
     if (!suiviEq) return;
     var btn = this;
-    var inputs = Array.prototype.slice.call(document.querySelectorAll("#suiviChampsList [data-fid]"));
-    var valeurs = [];
-    var pending = 0, started = false, failed = false;
+    var eqId = suiviEq.Id;
+    var d = suiviDiff();
+    var fichiers = Array.prototype.filter.call(document.querySelectorAll("#suiviChampsList input[type=file]"), function (i) { return i.files.length; });
+    if (!Object.keys(d.eq).length && !d.valeurs.length && !fichiers.length) { toast("Aucune modification à enregistrer"); clearDraft(eqId); closeSuivi(); return; }
+    var pending = fichiers.length, failed = false, started = false;
 
     function envoyer() {
-      var payload = {
-        id: suiviEq.Id,
-        tranche: cleanTranche(document.getElementById("s_tranche").value),
-        batiment: document.getElementById("s_batiment").value.trim(),
-        local: cleanLocal(document.getElementById("s_local").value),
-        datePose: document.getElementById("s_datePose").value || "",
-        commentaires: document.getElementById("s_commentaires").value.trim(),
-        valeurs: valeurs
-      };
-      google.script.run.withSuccessHandler(function () {
+      var payload = { id: eqId, eq: d.eq, base: d.base, valeurs: d.valeurs };
+      writeOp("saveSuivi", [payload], function (err, r) {
         btn.disabled = false;
-        toast("Suivi enregistré");
+        if (err) { toast("Erreur : " + err.message, 8000); return; }
+        clearDraft(eqId);
         closeSuivi();
-        loadData();
-      }).withFailureHandler(function (err) { btn.disabled = false; toast("Erreur : " + err.message, 8000); }).saveSuivi(payload);
+        if (r && r.conflits && r.conflits.length) {
+          toast("Enregistré. ⚠ Modifié entre-temps par un autre utilisateur : " + r.conflits.map(function (c) { return c.champ + " (ancienne valeur : « " + c.ancien + " »)"; }).join(", "), 12000);
+        } else toast(r && r.queued ? "Hors ligne : saisie conservée, envoi dès le retour du réseau" : "Suivi enregistré", r && r.queued ? 6000 : 2600);
+        if (!(r && r.queued)) loadData(null, true); else renderAll();
+      });
     }
 
     btn.disabled = true;
-    inputs.forEach(function (inp) {
-      var fid = inp.dataset.fid;
-      if (inp.type === "file") {
-        if (!inp.files.length) { valeurs.push({ champId: fid, valeur: inp.dataset.url || "" }); return; }
-        var file = inp.files[0];
-        pending++;
-        var reader = new FileReader();
-        reader.onload = function () {
-          google.script.run.withSuccessHandler(function (url) {
-            valeurs.push({ champId: fid, valeur: url });
-            pending--;
-            if (started && pending === 0 && !failed) envoyer();
-          }).withFailureHandler(function (err) {
-            failed = true; btn.disabled = false; toast("Erreur upload fichier : " + err.message, 8000);
-          }).uploadFichier(reader.result.split(",")[1], file.name, file.type || "application/pdf");
-        };
-        reader.readAsDataURL(file);
-      } else {
-        valeurs.push({ champId: fid, valeur: inp.value });
-      }
+    fichiers.forEach(function (inp) {
+      var file = inp.files[0];
+      var reader = new FileReader();
+      reader.onload = function () {
+        google.script.run.withSuccessHandler(function (url) {
+          d.valeurs.push({ champId: inp.dataset.fid, valeur: url, base: inp.dataset.url || "" });
+          pending--;
+          if (started && pending === 0 && !failed) envoyer();
+        }).withFailureHandler(function (err) {
+          failed = true; btn.disabled = false; toast("Erreur upload fichier : " + err.message, 8000);
+        }).uploadFichier(reader.result.split(",")[1], file.name, file.type || "application/pdf");
+      };
+      reader.readAsDataURL(file);
     });
     started = true;
     if (pending === 0) envoyer();
@@ -1332,7 +2024,7 @@
     var box = document.getElementById("pickList");
     if (!libres.length) {
       box.innerHTML = "<div class=\"muted\" style=\"padding:6px 0 10px\">Aucun équipement sans puce" + (q ? " pour cette recherche" : "") + ". " +
-        (isAdmin() ? "Vous pouvez en créer un nouveau." : "Demandez à l'administrateur de créer l'équipement.") + "</div>";
+        "Vous pouvez en créer un nouveau." + "</div>";
       return;
     }
     box.innerHTML = "";
@@ -1341,14 +2033,11 @@
       b.type = "button"; b.className = "pickItem";
       b.innerHTML = escapeHtml(e.Nom) + "<small>" + escapeHtml((e.Categorie || "Sans catégorie") + (lieu(e) ? " · " + lieu(e) : "")) + "</small>";
       b.addEventListener("click", function () {
-        google.script.run.withSuccessHandler(function () {
-          closePick();
-          toast("Puce associée à « " + e.Nom + " »");
-          loadData(function () {
-            var maj = state.data.equipements.find(function (x) { return x.Id === e.Id; });
-            if (maj) openSuiviTerrain(maj);
-          });
-        }).withFailureHandler(function (err) { toast("Erreur : " + err.message, 8000); }).associerPuce(e.Id, pickUid);
+        closePick();
+        associer(e, pickUid, function () {
+          var maj = state.data.equipements.find(function (x) { return x.Id === e.Id; }) || e;
+          openActions(maj);
+        });
       });
       box.appendChild(b);
     });
@@ -1366,9 +2055,16 @@
   document.getElementById("pickOverlay").addEventListener("click", function (e) { if (e.target === this) closePick(); });
   document.getElementById("pickCreateBtn").addEventListener("click", function () { closePick(); openEquipement(null, pickUid); });
 
-  // ---------- DIFFUSION ----------
+  // ---------- CONFIGURATION DES ALERTES ----------
+  function listeMails(v) { return String(v || "").split(/[,;\s]+/).filter(function (x) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x); }); }
   els.diffusionBtn.addEventListener("click", function () {
-    els.f_seuil.value = state.data.seuilJours;
+    var c = acfg();
+    ["dispo", "apave", "form"].forEach(function (t) {
+      document.getElementById("al_" + t + "_actif").checked = !!c[t].actif;
+      document.getElementById("al_" + t + "_jours").value = c[t].jours;
+      document.getElementById("al_" + t + "_dest").value = (c[t].dest || []).join(", ");
+    });
+    document.getElementById("al_relance").value = c.relance;
     els.diffList.innerHTML = "";
     (state.data.diffusion.length ? state.data.diffusion : [""]).forEach(function (email) { addDiffRow(email); });
     els.diffOverlay.hidden = false;
@@ -1385,16 +2081,343 @@
   els.cancelDiffBtn.addEventListener("click", function () { els.diffOverlay.hidden = true; });
   els.diffOverlay.addEventListener("click", function (e) { if (e.target === els.diffOverlay) els.diffOverlay.hidden = true; });
   els.saveDiffBtn.addEventListener("click", function () {
-    var emails = Array.prototype.slice.call(els.diffList.querySelectorAll("input")).map(function (i) { return i.value.trim(); }).filter(Boolean);
-    var seuil = Number(els.f_seuil.value) || 30;
-    adm("saveDiffusion", [emails, seuil], function () {
-      toast("Paramètres enregistrés");
+    var cfg = { diffusion: Array.prototype.slice.call(els.diffList.querySelectorAll("input")).map(function (i) { return i.value.trim(); }).filter(Boolean),
+      relance: Number(document.getElementById("al_relance").value) || 7 };
+    ["dispo", "apave", "form"].forEach(function (t) {
+      cfg[t] = { actif: document.getElementById("al_" + t + "_actif").checked, jours: Number(document.getElementById("al_" + t + "_jours").value) || 30,
+        dest: listeMails(document.getElementById("al_" + t + "_dest").value) };
+    });
+    adm("saveAlertes", [cfg], function () {
+      toast("Alertes enregistrées");
       els.diffOverlay.hidden = true;
       loadData();
     });
   });
 
+  // ---------- APAVE : DATES EN MASSE ----------
+  var apSel = {};
+  function apRender() {
+    var q = (document.getElementById("ap_search").value || "").toLowerCase().trim();
+    var box = document.getElementById("ap_list"); box.innerHTML = "";
+    var liste = state.data.equipements.filter(function (e) { return !q || (e.Nom + " " + (e.NumeroSerie || "") + " " + lieu(e)).toLowerCase().indexOf(q) !== -1; });
+    liste.forEach(function (e) {
+      var lab = document.createElement("label"); lab.className = "selRow";
+      lab.innerHTML = '<input type="checkbox"' + (apSel[e.Id] ? " checked" : "") + '><span>' + escapeHtml(e.Nom) + '<small>' + escapeHtml(lieu(e) || "sans local") + ' · APAVE : ' + (e.ApaveDate ? fmtDate(e.ApaveDate) : "non renseigné") + '</small></span>';
+      lab.querySelector("input").addEventListener("change", function () { apSel[e.Id] = this.checked; apCount(); });
+      box.appendChild(lab);
+    });
+    if (!liste.length) box.innerHTML = '<div class="muted">Aucun équipement.</div>';
+    apCount();
+    return liste;
+  }
+  function apCount() { var n = Object.keys(apSel).filter(function (k) { return apSel[k]; }).length; document.getElementById("ap_count").textContent = n + " équipement(s) sélectionné(s)"; }
+  document.getElementById("apaveBulkBtn").addEventListener("click", function () {
+    apSel = {}; document.getElementById("ap_search").value = ""; document.getElementById("ap_date").value = "";
+    apRender(); document.getElementById("apaveOverlay").hidden = false;
+  });
+  document.getElementById("ap_search").addEventListener("input", apRender);
+  document.getElementById("ap_all").addEventListener("click", function () { apRender().forEach(function (e) { apSel[e.Id] = true; }); apRender(); });
+  document.getElementById("ap_none").addEventListener("click", function () { apSel = {}; apRender(); });
+  document.getElementById("ap_cancel").addEventListener("click", function () { document.getElementById("apaveOverlay").hidden = true; });
+  document.getElementById("apaveOverlay").addEventListener("click", function (e) { if (e.target === this) this.hidden = true; });
+  document.getElementById("ap_ok").addEventListener("click", function () {
+    var ids = Object.keys(apSel).filter(function (k) { return apSel[k]; });
+    var date = document.getElementById("ap_date").value;
+    if (!date) { toast("Choisissez la nouvelle date"); return; }
+    if (!ids.length) { toast("Cochez au moins un équipement"); return; }
+    if (!confirm("Mettre la date APAVE au " + fmtDate(date) + " pour " + ids.length + " équipement(s) ?")) return;
+    var btn = this; btn.disabled = true;
+    writeOp("majApaveMasse", [ids, date], function (err, r) {
+      btn.disabled = false;
+      if (err) { toast("Erreur : " + err.message, 8000); return; }
+      document.getElementById("apaveOverlay").hidden = true;
+      toast(r && r.queued ? "Hors ligne : modification conservée, envoi dès le retour du réseau" : ids.length + " équipement(s) mis à jour", 5000);
+      if (r && r.queued) renderAll(); else loadData(null, true);
+    });
+  });
+
+  // ---------- INVENTAIRE PAR LOCAUX ----------
+function inventaireHtml(data, opts) {
+  opts = opts || {};
+  var cfg = data.alertes || {};
+  var seuilApave = (cfg.apave && cfg.apave.jours) || 30;
+  var seuilDispo = (cfg.dispo && cfg.dispo.jours) || 30;
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]; });
+  }
+  var t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  function jr(s) { return Math.round((new Date(s) - t0) / 86400000); }
+  function fd(s) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s || ""); return m ? m[3] + "/" + m[2] + "/" + m[1] : (s || ""); }
+  function nat(s) { return String(s).toLowerCase().replace(/\d+/g, function (n) { return ("000000" + n).slice(-6); }); }
+  function clean(v, re) { return String(v == null ? "" : v).trim().replace(re, ""); }
+
+  var liste = (data.equipements || []).filter(function (e) { return opts.includeRepli || e.Statut !== "Replié"; });
+  var groupes = {}, ordre = [];
+  liste.forEach(function (e) {
+    var t = clean(e.Tranche, /^tranche\s*/i), b = String(e.Batiment || "").trim(), l = clean(e.Local, /^local\s*/i);
+    var parts = [];
+    if (t) parts.push("Tranche " + t);
+    if (b) parts.push(b);
+    if (l) parts.push("Local " + l);
+    var lab = parts.length ? parts.join(" · ") : "Localisation non renseignée";
+    var k = parts.length ? nat([t, b, l].join(" | ")) : "~~~";
+    if (!groupes[k]) { groupes[k] = { lab: lab, items: [] }; ordre.push(k); }
+    groupes[k].items.push(e);
+  });
+  ordre.sort();
+
+  var nDispo = 0, nApaveKo = 0, nApaveSoon = 0;
+  liste.forEach(function (e) {
+    if (e.Statut === "À disposition") nDispo++;
+    if (e.ApaveDate) { var j = jr(e.ApaveDate); if (j < 0) nApaveKo++; else if (j <= seuilApave) nApaveSoon++; }
+  });
+
+  function apaveCell(e) {
+    if (!e.ApaveDate) return "<span style=\"color:#888\">—</span>";
+    var j = jr(e.ApaveDate);
+    var c = j < 0 ? "#b1402d" : (j <= seuilApave ? "#8a5a0b" : "#1f6f63");
+    var bg = j < 0 ? "#f5e0d9" : (j <= seuilApave ? "#fbecc8" : "#dcece7");
+    return "<span style=\"display:inline-block;padding:2px 8px;border-radius:10px;font-weight:bold;background:" + bg + ";color:" + c + "\">" + fd(e.ApaveDate) + (j < 0 ? " · expiré" : "") + "</span>";
+  }
+  function statutCell(e) {
+    if (e.Statut === "Replié") return "Repliée" + (e.DateStatut ? " le " + fd(e.DateStatut) : "");
+    var debut = e.Statut === "À disposition" ? (e.DateStatut || e.DatePose) : (e.Statut ? "" : e.DatePose);
+    var txt = e.Statut === "À disposition" ? "À disposition" : (e.DatePose ? "Posée" : "—");
+    if (debut) {
+      var dep = -jr(debut);
+      txt += " depuis le " + fd(debut) + " (" + dep + " j)";
+      if (dep >= seuilDispo) txt = "<span style=\"color:#8a5a0b;font-weight:bold\">" + txt + "</span>";
+    }
+    return txt;
+  }
+
+  var th = "padding:6px 8px;text-align:left;background:#f2f3f4;border-bottom:2px solid #ddd;font-size:12px;color:#555;text-transform:uppercase";
+  var td = "padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top;font-size:13px";
+  var html = "<!DOCTYPE html><html lang=\"fr\"><head><meta charset=\"utf-8\"><title>OoMatos — Inventaire par locaux</title></head>" +
+    "<body style=\"margin:0;padding:16px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#1c262b\">" +
+    "<div style=\"border-left:8px solid #ffe600;background:#111;color:#fff;padding:14px 16px\">" +
+    (opts.logo ? "<img src=\"" + opts.logo + "\" alt=\"Orano\" height=\"44\" style=\"float:right;background:#fff;border-radius:6px;padding:3px\">" : "") +
+    "<div style=\"font-size:20px;font-weight:bold\">OoMatos — Inventaire par locaux</div>" +
+    "<div style=\"font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#FFFA00;margin-top:2px\">Localiser · Suivre · Sécuriser</div>" +
+    "<div style=\"font-size:12px;color:#ccc;margin-top:4px\">Édité le " + fd(new Date().toISOString().slice(0, 10)) + (opts.includeRepli ? " · équipements repliés inclus" : " · équipements repliés exclus") + "</div></div>" +
+    "<p style=\"font-size:14px;margin:14px 0\"><b>" + liste.length + "</b> équipement(s) · <b>" + nDispo + "</b> à disposition · APAVE expiré : <b style=\"color:#b1402d\">" + nApaveKo + "</b> · à renouveler sous " + seuilApave + " j : <b style=\"color:#8a5a0b\">" + nApaveSoon + "</b></p>";
+
+  if (!liste.length) html += "<p style=\"color:#666\">Aucun équipement à afficher.</p>";
+  ordre.forEach(function (k) {
+    var g = groupes[k];
+    g.items.sort(function (a, b) { return nat(a.Nom) < nat(b.Nom) ? -1 : 1; });
+    html += "<h3 style=\"margin:20px 0 6px;font-size:15px;border-bottom:3px solid #ffe600;padding-bottom:4px\">" + esc(g.lab) + " <span style=\"font-weight:normal;color:#777;font-size:12px\">(" + g.items.length + ")</span></h3>" +
+      "<table style=\"border-collapse:collapse;width:100%\"><tr><th style=\"" + th + "\">Équipement</th><th style=\"" + th + "\">Catégorie</th><th style=\"" + th + "\">N° de série</th><th style=\"" + th + "\">Puce</th><th style=\"" + th + "\">Statut</th><th style=\"" + th + "\">Contrôle APAVE</th><th style=\"" + th + "\">Commentaire</th></tr>";
+    g.items.forEach(function (e) {
+      html += "<tr><td style=\"" + td + ";font-weight:bold\">" + esc(e.Nom) + "</td><td style=\"" + td + "\">" + esc(e.Categorie) + "</td><td style=\"" + td + "\">" + esc(e.NumeroSerie) + "</td><td style=\"" + td + ";font-family:monospace;font-size:11px\">" + esc(e.CodeRFID) +
+        "</td><td style=\"" + td + "\">" + statutCell(e) + "</td><td style=\"" + td + "\">" + apaveCell(e) + "</td><td style=\"" + td + "\">" + esc(e.Commentaires) + "</td></tr>";
+    });
+    html += "</table>";
+  });
+  html += "<p style=\"font-size:11px;color:#999;margin-top:24px\">Généré par OoMatos · Localiser · Suivre · Sécuriser.</p></body></html>";
+  return html;
+}
+
+  function invOpts() { return { includeRepli: document.getElementById("inv_repli").checked, logo: ORANO_LOGO }; }
+  function invHtml() { return inventaireHtml(state.data, invOpts()); }
+  function invDownload() {
+    try {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([invHtml()], { type: "text/html;charset=utf-8" }));
+      a.download = "OoMatos_inventaire_" + new Date().toISOString().slice(0, 10) + ".html";
+      document.body.appendChild(a); a.click(); a.remove();
+      toast("Inventaire téléchargé");
+    } catch (e) { toast("Téléchargement impossible depuis cet écran : ouvrez l'application dans Chrome", 8000); }
+  }
+  document.getElementById("invPreviewBtn").addEventListener("click", function () {
+    document.getElementById("invFrame").srcdoc = invHtml();
+    document.getElementById("invOverlay").hidden = false;
+  });
+  document.getElementById("invClose").addEventListener("click", function () { document.getElementById("invOverlay").hidden = true; });
+  document.getElementById("invOverlay").addEventListener("click", function (e) { if (e.target === this) this.hidden = true; });
+  document.getElementById("invDownloadBtn").addEventListener("click", invDownload);
+  document.getElementById("invDl2").addEventListener("click", invDownload);
+  document.getElementById("invSendBtn").addEventListener("click", function () {
+    var email = document.getElementById("inv_email").value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast("Saisissez une adresse e-mail valide"); return; }
+    if (MODE === "demo") { toast("Aperçu : l'inventaire serait envoyé à " + email, 6000); return; }
+    if (MODE === "local") { toast("Envoi de mails indisponible en mode local : il faut le serveur Google (Apps Script)", 7000); return; }
+    var btn = this; btn.disabled = true;
+    adm("envoyerInventaire", [email, { includeRepli: document.getElementById("inv_repli").checked }], function () {
+      btn.disabled = false; toast("Inventaire envoyé à " + email, 6000);
+    }, function (err) { btn.disabled = false; toast("Erreur : " + err.message, 9000); });
+  });
+
+  // ---------- ÉCRITURES SÛRES : file d'attente hors ligne ----------
+  // Chaque saisie est envoyée tout de suite au serveur (Google Sheets). Si le réseau est coupé, elle est conservée sur l'appareil
+  // (file d'attente), affichée normalement, puis renvoyée automatiquement dans l'ordre dès que le réseau revient. Rien n'est perdu.
+  var Q_KEY = "oopompeQueue";
+  function uid() { return "op-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
+  function qLoad() { try { return JSON.parse(localStorage.getItem(Q_KEY) || "[]"); } catch (e) { return []; } }
+  function qSave(q) { try { localStorage.setItem(Q_KEY, JSON.stringify(q)); } catch (e) { toast("Stockage de l'appareil plein : la saisie en attente n'a pas pu être conservée", 9000); } }
+
+  function isNetworkError(err) {
+    var m = (err && err.message) || String(err || "");
+    return navigator.onLine === false || /fetch|network|réseau|load failed|server error|timeout|failed to/i.test(m);
+  }
+  function serverMode() { return MODE === "apps" || MODE === "remote"; }
+
+  function sendOp(op, done) {
+    var r = google.script.run
+      .withSuccessHandler(function (res) { done(null, res); })
+      .withFailureHandler(function (err) { done(err || new Error("Erreur inconnue")); });
+    r[op.name].apply(r, op.args);
+  }
+
+  // Écrit une opération (saisie opérateur). done(err, resultat) ; resultat.queued = true si mise en attente.
+  function writeOp(name, args, done) {
+    var op = { name: name, args: args, t: Date.now() };
+    function enfiler() {
+      var q = qLoad(); q.push(op); qSave(q);
+      applyLocal(op, state.data);
+      updateSyncUi();
+      done(null, { queued: true });
+    }
+    if (serverMode() && qLoad().length) { enfiler(); flushQueue(); return; } // l'ordre des saisies est préservé
+    sendOp(op, function (err, r) {
+      if (!err) { done(null, r); refreshSoon("✔ Enregistré et synchronisé"); return; }
+      if (serverMode() && isNetworkError(err)) { enfiler(); return; }
+      done(err);
+    });
+  }
+
+  var flushing = false;
+  function flushQueue() {
+    if (flushing || !serverMode() || !qLoad().length) { updateSyncUi(); return; }
+    flushing = true; updateSyncUi();
+    (function next() {
+      var q = qLoad();
+      if (!q.length) { flushing = false; updateSyncUi(); loadData(function () { toast("✔ Saisies en attente synchronisées", 2600); }, true); return; }
+      sendOp(q[0], function (err, r) {
+        if (err && isNetworkError(err)) { flushing = false; updateSyncUi(true); return; } // on réessaiera
+        if (err) toast("Une saisie en attente a été refusée : " + err.message, 9000);
+        else if (r && r.conflits && r.conflits.length) toast("⚠ Une valeur avait été modifiée entre-temps : " + r.conflits.map(function (c) { return c.champ; }).join(", ") + " (l'ancienne valeur est dans l'historique)", 10000);
+        q = qLoad(); q.shift(); qSave(q);
+        next();
+      });
+    })();
+  }
+
+  // Applique une opération en attente sur des données (pour l'affichage tant qu'elle n'est pas partie)
+  function applyLocal(op, data) {
+    var a = op.args || [], eq;
+    function find(id) { return data.equipements.find(function (e) { return e.Id === id; }); }
+    var map = { tranche: "Tranche", batiment: "Batiment", local: "Local", datePose: "DatePose", commentaires: "Commentaires", numeroSerie: "NumeroSerie", apave: "ApaveDate" };
+    if (op.name === "saveSuivi") {
+      var p = a[0]; eq = find(p.id); if (!eq) return;
+      Object.keys(p.eq || {}).forEach(function (k) { eq[map[k]] = p.eq[k]; });
+      (p.valeurs || []).forEach(function (v) {
+        var c = (eq.champs || []).find(function (x) { return x.ChampId === v.champId; });
+        if (c) c.Valeur = v.valeur;
+        else {
+          var d = (data.formulaire || []).find(function (f) { return f.Id === v.champId; });
+          if (d) (eq.champs = eq.champs || []).push({ Id: "loc-" + v.champId, EquipementId: eq.Id, ChampId: d.Id, Nom: d.Nom, Type: d.Type, Valeur: v.valeur, Ordre: d.Ordre });
+        }
+      });
+    } else if (op.name === "enregistrerMouvement") {
+      var m = a[0]; eq = find(m.id); if (!eq) return;
+      var statut = m.action === "repli" ? "Replié" : "À disposition";
+      if (m.action === "mise_a_disposition") { eq.Tranche = m.tranche || ""; eq.Batiment = m.batiment || ""; eq.Local = m.local || ""; }
+      eq.Statut = statut; eq.DateStatut = new Date(op.t).toISOString().slice(0, 10);
+      var dt = new Date(op.t), pad = function (x) { return (x < 10 ? "0" : "") + x; };
+      (data.mouvements = data.mouvements || []).unshift({ Date: eq.DateStatut + " " + pad(dt.getHours()) + ":" + pad(dt.getMinutes()), EquipementId: eq.Id, Nom: eq.Nom, Action: statut,
+        Tranche: eq.Tranche || "", Batiment: eq.Batiment || "", Local: eq.Local || "", Commentaire: m.commentaire || "" });
+    } else if (op.name === "majApaveMasse") {
+      (data.equipements || []).forEach(function (e) { if (a[0].indexOf(e.Id) !== -1) e.ApaveDate = a[1]; });
+    } else if (op.name === "associerPuce") {
+      eq = find(a[0]); if (eq && !eq.CodeRFID) eq.CodeRFID = a[1];
+    }
+  }
+
+  // ---------- INDICATEUR DE SYNCHRONISATION ----------
+  function updateSyncUi(failed) {
+    var n = qLoad().length, off = navigator.onLine === false || !!failed;
+    var labels = { apps: "Synchronisé", remote: "Synchronisé", local: "Local", demo: "Aperçu" };
+    var t = labels[MODE] || "", cls = "pill-btn org-note", synced = false;
+    if (MODE === "demo" && lastSync) { t = "Synchronisé"; synced = true; cls += " is-synced"; }
+    var enCours = syncing && !off;
+    if (serverMode()) {
+      if (off) { t = "Hors ligne"; cls += " is-offline"; }
+      else if (n) { t = "⏳ " + n + " en attente"; cls += " is-pending"; }
+      else if (lastSync) { synced = true; cls += " is-synced"; }
+      if (off && n) { t = "⏳ " + n + " en attente"; cls = "pill-btn org-note is-pending"; }
+    }
+    var hh = lastSync ? ("0" + lastSync.getHours()).slice(-2) + ":" + ("0" + lastSync.getMinutes()).slice(-2) : "";
+    if (enCours) { synced = false; t = "Synchronisation…"; cls = "pill-btn org-note is-syncing"; }
+    if (synced) els.storageNote.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.2 12.4l3.3 3.3 6.3-6.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' + t + '<span class="sync-time"> · ' + hh + '</span>';
+    else els.storageNote.textContent = t;
+    els.storageNote.className = cls;
+    els.storageNote.title = lastSync ? "Dernière synchronisation : " + ("0" + lastSync.getHours()).slice(-2) + ":" + ("0" + lastSync.getMinutes()).slice(-2) : "";
+    var info = document.getElementById("syncInfo");
+    if (!info) return;
+    var h = lastSync ? ("0" + lastSync.getHours()).slice(-2) + ":" + ("0" + lastSync.getMinutes()).slice(-2) : "—";
+    if (serverMode()) {
+      info.textContent = "Chaque saisie est enregistrée tout de suite dans le Google Sheets et seules les valeurs modifiées sont envoyées : deux personnes qui saisissent des champs différents ne s'écrasent pas. " +
+        "Sans réseau, la saisie reste sur cet appareil et part automatiquement au retour du réseau. Dernière actualisation : " + h + " · " +
+        (n ? n + " saisie(s) en attente d'envoi." : "aucune saisie en attente.") + (off ? " Réseau indisponible." : "");
+    } else {
+      info.textContent = MODE === "demo" ? "Aperçu : données d'exemple, rien n'est enregistré." : "Mode local : les données restent sur cet appareil uniquement (pas de synchronisation).";
+    }
+  }
+  window.addEventListener("online", function () { updateSyncUi(); flushQueue(); });
+  window.addEventListener("offline", function () { updateSyncUi(); });
+  setInterval(flushQueue, 30000);
+  // Actualisation automatique chaque minute (sauf si une fiche est ouverte ou qu'une saisie est en attente)
+  setInterval(function () {
+    if (serverMode() && !overlayOpen() && !qLoad().length && document.visibilityState === "visible") loadData(null, true);
+  }, 60000);
+  els.storageNote.addEventListener("click", function () {
+    if (serverMode() && qLoad().length) flushQueue();
+    loadData(function () { toast("Données actualisées · " + ("0" + new Date().getHours()).slice(-2) + ":" + ("0" + new Date().getMinutes()).slice(-2)); });
+  });
+
+  // ---------- ONGLETS ET RÉGLAGES ----------
+  function showTab(t) {
+    document.getElementById("inventoryTab").hidden = (t !== "pompes");
+    document.getElementById("settingsTab").hidden = (t !== "reglages");
+    document.getElementById("tabPompes").classList.toggle("is-active", t === "pompes");
+    document.getElementById("tabReglages").classList.toggle("is-active", t === "reglages");
+    window.scrollTo(0, 0);
+  }
+  document.getElementById("tabPompes").addEventListener("click", function () { showTab("pompes"); });
+  document.getElementById("tabReglages").addEventListener("click", function () { showTab("reglages"); renderSettings(); });
+
+  function renderSettings() {
+    document.getElementById("roleInfo").textContent = isAdmin()
+      ? "Mode administrateur actif : vous pouvez aussi configurer le formulaire, régler les alertes et envoyer les rapports par mail."
+      : "Mode opérateur : scanner, créer un équipement, associer une puce, mettre à disposition, replier, remplir le formulaire. Le formulaire, les alertes et l'envoi des rapports sont réservés à l'administrateur." + (MODE === "demo" ? " (Aperçu : code administrateur 1234.)" : "");
+    document.getElementById("adminBtn2").textContent = isAdmin() ? "🔓 Quitter le mode administrateur" : "🔒 Passer en mode administrateur";
+    updateSyncUi();
+  }
+  document.getElementById("adminBtn2").addEventListener("click", function () { document.getElementById("adminBtn").click(); });
+
+  // ---------- EXPORT CSV (administrateur) ----------
+  document.getElementById("exportBtn").addEventListener("click", function () {
+    var form = state.data.formulaire || [];
+    var head = ["Nom", "Catégorie", "N° de série", "Fin validité APAVE", "Puce", "Statut", "Date du statut", "Tranche", "Bâtiment", "Local", "Date de pose", "Commentaires"].concat(form.map(function (f) { return f.Nom; }));
+    function cell(v) { v = (v == null ? "" : String(v)).replace(/\r?\n/g, " "); return "\"" + v.replace(/"/g, "\"\"") + "\""; }
+    var rows = [head].concat(state.data.equipements.map(function (e) {
+      return [e.Nom, e.Categorie, e.NumeroSerie, e.ApaveDate, e.CodeRFID, e.Statut, e.DateStatut, e.Tranche, e.Batiment, e.Local, e.DatePose, e.Commentaires].concat(form.map(function (f) { return valeurChamp(e, f); }));
+    }));
+    var csv = "﻿" + rows.map(function (r) { return r.map(cell).join(";"); }).join("\r\n");
+    try {
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+      a.download = "OoMatos_" + new Date().toISOString().slice(0, 10) + ".csv";
+      document.body.appendChild(a); a.click(); a.remove();
+      toast("Export : " + state.data.equipements.length + " équipement(s)");
+    } catch (e) { toast("Export impossible depuis cet écran : ouvrez l'application dans Chrome", 8000); }
+  });
+
   applyMode();
+  updateSyncUi();
+  renderSettings();
+  flushQueue();
   loadData();
   try {
     var memo = sessionStorage.getItem("suiviAdminCode");
