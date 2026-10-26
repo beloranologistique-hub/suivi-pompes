@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suivi des pompes</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ink: #1c262b;
+    --steel: #69737b;
+    --steel-soft: #98a1a8;
+    --ground: #f2f3f4;
+    --surface: #ffffff;
+    --surface-raised: #edeff1;
+    --line: #e1e4e6;
+    --accent: #2f6f97;
+    --accent-soft: #e7eff4;
+    --accent-ink: #ffffff;
+    --header-bg: #223d44;
+    --header-bg-soft: #1a2f34;
+    --header-ink: #ffffff;
+    --header-tagline: rgba(255,255,255,.62);
+    --header-btn-bg: rgba(255,255,255,.14);
+    --header-btn-line: rgba(255,255,255,.22);
+    --banner-bg: #fdf1ce;
+    --banner-ink: #7a5b16;
+    --ok: #1f6f63;
+    --ok-bg: #dcece7;
+    --warn: #8a5a0b;
+    --warn-bg: #fbecc8;
+    --alert: #b1402d;
+    --alert-bg: #f5e0d9;
+    --shadow: 0 1px 2px rgba(20,26,29,.05), 0 8px 20px -10px rgba(20,26,29,.16);
+  }
+  /* Palette fixe (rendu « OoMatos » : bandeau sombre + accent bleu), quel que soit le mode sombre/clair de l'appareil. */
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font-family: "Work Sans", ui-sans-serif, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-optical-sizing: auto; text-wrap: balance; margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  button, input, select, textarea { font-family: inherit; font-size: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  /* ---------- En-tête ---------- */
+  .app-header { background: linear-gradient(155deg, var(--header-bg) 0%, var(--header-bg-soft) 100%); color: var(--header-ink); padding-block: 12px; }
+  .app-header-inner { max-width: 960px; margin: 0 auto; padding-inline: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-logo { flex: none; width: 32px; height: 32px; border-radius: 9px; background: var(--header-btn-bg); border: 1px solid var(--header-btn-line); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .brand h1 { font-size: 19px; color: var(--header-ink); }
+  .brand .tagline { color: var(--header-tagline); font-size: 12px; display: block; }
+  .masthead-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pill-btn { color: var(--header-ink); font-size: 12px; font-weight: 600; border: 1px solid var(--header-btn-line); border-radius: 999px; padding: 5px 12px; background: var(--header-btn-bg); white-space: nowrap; cursor: pointer; }
+  button.pill-btn:hover { background: var(--header-btn-line); }
+  .org-note { cursor: default; }
+  .mode-banner { background: var(--banner-bg); color: var(--banner-ink); text-align: center; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 7px 16px; }
+
+  .page { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; padding: 18px 16px 100px; }
+
+  /* ---------- Scan ---------- */
+  .scan-hero { background: linear-gradient(155deg, var(--surface) 0%, var(--surface-raised) 100%); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 10px; }
+  .scan-hero-row { display: flex; gap: 10px; align-items: center; }
+  .scan-icon { flex: none; width: 44px; height: 44px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .scan-btn { flex: 1; justify-content: center; padding: 12px 14px; font-size: 15px; }
+  .scan-hint { color: var(--steel); font-size: 12.5px; }
+  .scan-hint b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Compteurs ---------- */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 2px; }
+  .tile.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .tile .n { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; }
+  .tile .l { color: var(--steel); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+  .tile.t-warn .n { color: var(--warn); }
+  .tile.t-danger .n { color: var(--alert); }
+
+  /* ---------- Alertes mail ---------- */
+  .banner { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--steel); display: flex; justify-content: space-between; gap: 10px 12px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow); }
+  .banner b { color: var(--ink); font-weight: 600; font-size: 14px; }
+  .banner .sub { display: block; margin-top: 2px; }
+  .banner .sub.is-ok { color: var(--ok); }
+  .banner .sub.is-warn { color: var(--warn); }
+  .banner-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .banner-actions .btn { font-size: 12.5px; padding: 6px 10px; }
+
+  /* ---------- Barre d'outils ---------- */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #searchInput { flex: 1; min-width: 160px; border: 1px solid transparent; background: var(--surface-raised); color: var(--ink); border-radius: 10px; padding: 8px 10px; font-size: 14px; }
+  #searchInput:focus { border-color: var(--accent); outline: none; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { border: 1px solid transparent; background: var(--surface-raised); color: var(--steel); border-radius: 999px; padding: 5px 11px; font-size: 12.5px; cursor: pointer; }
+  .chip.is-active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .btn { border: 1px solid transparent; background: var(--surface-raised); color: var(--ink); border-radius: 10px; padding: 8px 13px; font-size: 13.5px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .btn:hover { border-color: var(--steel-soft); }
+  .btn.primary, .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .btn.danger { color: var(--alert); }
+  .btn.is-listening { background: var(--alert); border-color: var(--alert); color: #fff; font-weight: 600; }
+
+  /* ---------- Cartes ---------- */
+  #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 13px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow); }
+  .card.is-example { border-style: dashed; }
+  .card.is-danger { border-color: var(--alert); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .card-top .name { font-weight: 600; font-size: 14.5px; text-wrap: balance; }
+  .card-cat { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--steel); display: inline-flex; align-items: center; gap: 5px; margin-top: 3px; }
+  .cat-badge { flex: none; width: 17px; height: 17px; border-radius: 6px; background: var(--surface-raised); color: var(--steel); display: inline-flex; align-items: center; justify-content: center; padding: 3px; }
+  .cat-badge svg { width: 10px; height: 10px; }
+  .card-badges { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .badge { font-weight: 600; font-size: 10.5px; border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
+  .badge.alert { background: var(--alert-bg); color: var(--alert); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .card-code { font-size: 12px; color: var(--steel); letter-spacing: .03em; }
+  .card-loc { display: flex; align-items: baseline; gap: 6px; background: var(--surface-raised); border-radius: 10px; padding: 7px 9px; }
+  .card-loc .locpin { color: var(--accent); font-size: 13px; }
+  .card-loc .val { font-weight: 500; font-size: 13.5px; }
+  .card-line { color: var(--steel); font-size: 12.5px; }
+  .card-line.is-warn { color: var(--warn); font-weight: 600; }
+  .card-line.is-alert { color: var(--alert); font-weight: 600; }
+  .card-comment { font-size: 12.5px; color: var(--ink); border-left: 3px solid var(--warn); padding: 2px 0 2px 8px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+  .card-meta { display: flex; justify-content: space-between; color: var(--steel); font-size: 11.5px; }
+  .card-example-tag { font-size: 11px; color: var(--steel-soft); font-style: italic; }
+  .card-actions { display: flex; gap: 6px; justify-content: flex-end; }
+  .card-actions .btn { font-size: 12px; padding: 5px 9px; }
+  .empty-state { text-align: center; color: var(--steel); padding: 40px 10px; grid-column: 1 / -1; }
+
+  /* ---------- Fiches (panneaux) ---------- */
+  .panel-overlay { position: fixed; inset: 0; background: rgba(20,23,27,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 30; }
+  .panel { background: var(--surface); width: 100%; max-width: 520px; border-radius: 16px 16px 0 0; padding: 18px; max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 -8px 30px rgba(0,0,0,.25); }
+  @media (min-width: 640px) { .panel-overlay { align-items: center; } .panel { border-radius: 16px; } }
+  .panel h2 { font-size: 17px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field > label, .field-label { font-size: 11.5px; color: var(--steel); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; }
+  .field input, .field select, .field textarea { border: 1px solid transparent; background: var(--surface-raised); color: var(--ink); border-radius: 10px; padding: 9px 10px; font-size: 14.5px; width: 100%; min-width: 0; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); outline: none; }
+  .field textarea { resize: vertical; min-height: 72px; font-family: inherit; line-height: 1.4; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row > .field { flex: 1; min-width: 0; }
+  .field-row > .field.narrow { flex: .6; }
+  .field-row > .field.wide { flex: 1.5; }
+  .field-with-btn { display: flex; gap: 8px; }
+  .field-with-btn input { flex: 1; min-width: 0; }
+  .hint { font-size: 12px; color: var(--steel); }
+  .muted { color: var(--steel); font-size: 13px; }
+  .panel-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 4px; }
+  .panel-actions .right { display: flex; gap: 8px; }
+  .lieu-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .champRow { display: grid; grid-template-columns: 1.1fr 1fr 1fr auto auto; gap: 6px; margin-bottom: 8px; align-items: center; padding: 8px; background: var(--ground); border-radius: 10px; }
+  .champRow > * { min-width: 0; }
+  .champRow input, .champRow select { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 8px; font-size: 14px; }
+  .champRow .suiviFlag { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--steel); white-space: nowrap; }
+  .champRow .suiviFlag input { width: auto; }
+  @media (max-width: 700px) {
+    .champRow { grid-template-columns: 1fr 1fr; }
+    .champRow > input[data-role=nom], .champRow > select[data-role=type], .champRow > span[data-role=valeurWrap] { grid-column: 1 / -1; }
+    .champRow > button[data-role=del] { justify-self: end; }
+  }
+  .echeanceInfo { font-size: 12px; font-weight: 600; }
+  .echeanceInfo.warn { color: var(--warn); }
+  .echeanceInfo.danger { color: var(--alert); }
+  .echeanceInfo.ok { color: var(--ok); }
+  .diffRow { display: flex; gap: 6px; margin-bottom: 6px; }
+  .diffRow input { flex: 1; border: 1px solid transparent; background: var(--surface-raised); border-radius: 10px; padding: 9px 10px; }
+
+  /* ---------- Rôles : éléments réservés à l'administrateur ---------- */
+  body:not(.is-admin) .admin-only { display: none !important; }
+  .formRow { display: grid; grid-template-columns: minmax(0, 1.6fr) 175px auto; gap: 6px; margin-bottom: 8px; align-items: center; padding: 8px; background: var(--ground); border-radius: 10px; }
+  .formRow > * { min-width: 0; }
+  .formRow input, .formRow select { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 8px; font-size: 14px; }
+  .formRow .rowBtns { display: flex; gap: 4px; }
+  .formRow .rowBtns .btn { padding: 6px 9px; }
+  @media (max-width: 560px) { .formRow { grid-template-columns: 1fr; } .formRow .rowBtns { justify-content: flex-end; } }
+  .fixedFields { font-size: 12.5px; color: var(--steel); background: var(--ground); border-radius: 10px; padding: 9px 11px; margin-bottom: 10px; line-height: 1.5; }
+  .pickItem { display: block; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; cursor: pointer; font: inherit; color: var(--ink); }
+  .pickItem:hover { border-color: var(--accent); }
+  .pickItem small { display: block; color: var(--steel); margin-top: 2px; }
+
+  /* ---------- Bouton flottant et message ---------- */
+  .fab { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 20; border-radius: 999px; padding: 13px 18px; box-shadow: 0 8px 20px -6px rgba(28,33,39,.4); }
+  #toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(12px); background: var(--ink); color: var(--ground); padding: 10px 16px; border-radius: 16px; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 40; max-width: 90vw; text-align: center; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <div class="brand">
+      <span class="brand-logo">▣</span>
+      <div>
+        <h1>Suivi des pompes</h1>
+        <span class="tagline">Suivi des équipements par puces RFID / NFC</span>
+      </div>
+    </div>
+    <div class="masthead-right">
+      <button class="pill-btn" id="adminBtn" type="button">🔒 Administrateur</button>
+      <span class="pill-btn org-note" id="storageNote"></span>
+    </div>
+  </div>
+</header>
+
+<div class="mode-banner" id="modeBanner" hidden></div>
+
+<div class="page">
+
+  <div id="inventoryTab">
+    <div class="scan-hero" style="margin-bottom:18px;">
+      <div class="scan-hero-row">
+        <div class="scan-icon">▣</div>
+        <button class="btn btn-primary scan-btn" id="scanOpenBtn" type="button">📡 Scanner une puce</button>
+      </div>
+      <div class="scan-hint">Approchez la puce de l'arrière de la tablette : la <b>fiche de suivi</b> de l'équipement s'ouvre. Puce inconnue → vous choisissez l'équipement à lui associer.</div>
+    </div>
+
+    <div class="summary" id="summaryTiles" style="margin-bottom:18px;"></div>
+
+    <div class="banner admin-only" id="adminCard" style="margin-bottom:12px;">
+      <span><b>⚙ Mode administrateur</b><span class="sub">Le formulaire de saisie est commun à tous les équipements : les opérateurs ne remplissent que ce que vous y configurez.</span></span>
+      <span class="banner-actions">
+        <button class="btn" id="formConfigBtn" type="button">⚙ Configurer le formulaire</button>
+        <button class="btn" id="codeChangeBtn" type="button">🔑 Code administrateur</button>
+      </span>
+    </div>
+
+    <div class="banner admin-only" id="alertCard" style="margin-bottom:18px;">
+      <span><b>✉ Alertes mail</b><span class="sub" id="alertSub"></span></span>
+      <span class="banner-actions">
+        <button class="btn" id="diffusionBtn" type="button">⚙ Paramétrer</button>
+        <button class="btn" id="alertActivateBtn" type="button" hidden>Activer l'envoi automatique</button>
+        <button class="btn" id="alertSendBtn" type="button">Envoyer maintenant</button>
+      </span>
+    </div>
+
+    <div class="toolbar" style="margin-bottom:10px;">
+      <input id="searchInput" type="text" placeholder="Rechercher un nom, un code, un bâtiment, un local…">
+    </div>
+    <div class="chip-row" id="categoryChips" style="margin-bottom:12px;"></div>
+    <div id="grid"></div>
+  </div>
+
+</div>
+
+<button class="btn btn-primary fab admin-only" id="addBtn" type="button">+ Ajouter un équipement</button>
+
+<!-- FICHE EQUIPEMENT -->
+<div class="panel-overlay" id="eqOverlay" hidden>
+  <div class="panel">
+    <h2 id="eqTitle">Nouvel équipement</h2>
+    <div class="field"><label>Nom</label><input id="f_nom" placeholder="Ex. Pompe d'épuisement P-101"></div>
+    <div class="field"><label>Catégorie</label><input id="f_categorie" list="catList" placeholder="Ex. Pompe">
+      <datalist id="catList"></datalist>
+    </div>
+    <div class="field">
+      <label>Identifiant de la puce (RFID / NFC)</label>
+      <div class="field-with-btn">
+        <input id="f_code" class="mono" placeholder="Ex. 04:A1:B2:C3:D4:E5:F6">
+        <button type="button" class="btn primary" id="readNfcBtn">📡 Lire la puce</button>
+      </div>
+      <div class="hint">Cliquez sur « Lire la puce », puis approchez-la de l'arrière de la tablette. La saisie manuelle reste possible.</div>
+      <div><button type="button" class="btn" id="scanCodeBtn" style="margin-top:4px">🔗 Lien à écrire sur la puce (optionnel)</button></div>
+      <div id="tagLinkBox" hidden style="margin-top:6px">
+        <label class="field-label">Lien à écrire sur la puce NFC</label>
+        <div class="field-with-btn">
+          <input id="tagLink" readonly>
+          <button type="button" class="btn" id="copyTagLinkBtn">Copier</button>
+        </div>
+        <div class="hint">Enregistrez ce lien (type « URL ») sur la puce avec l'application gratuite NFC Tools. Ensuite, approcher le téléphone de la puce ouvre directement le suivi de cette pompe.</div>
+      </div>
+    </div>
+
+    <div class="hint" style="margin-bottom:12px">Localisation, date de pose, commentaires et caractéristiques se renseignent dans le formulaire de suivi, qui s'ouvre après l'enregistrement ou par scan de la puce.</div>
+
+    <div class="panel-actions">
+      <button class="btn danger" id="deleteEqBtn" type="button">Supprimer</button>
+      <div class="right">
+        <button class="btn" id="cancelEqBtn" type="button">Annuler</button>
+        <button class="btn primary" id="saveEqBtn" type="button">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALERTES MAIL -->
+<div class="panel-overlay" id="diffOverlay" hidden>
+  <div class="panel">
+    <h2>Alertes par mail</h2>
+    <div class="field">
+      <label>Alerter X jours avant l'échéance</label>
+      <input id="f_seuil" type="number" min="1" style="max-width:120px">
+    </div>
+    <div class="field">
+      <label>Destinataires</label>
+      <div id="diffList"></div>
+      <div><button class="btn" id="addDiffBtn" type="button">+ Ajouter un destinataire</button></div>
+    </div>
+    <div class="hint">Un mail récapitulatif part chaque jour vers 7 h tant qu'une échéance est proche ou dépassée, ou qu'un équipement est non conforme (relance au bout de 7 jours). L'envoi automatique s'active depuis la page d'accueil.</div>
+    <div class="panel-actions">
+      <div></div>
+      <div class="right">
+        <button class="btn" id="cancelDiffBtn" type="button">Annuler</button>
+        <button class="btn primary" id="saveDiffBtn" type="button">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUIVI TERRAIN -->
+<div class="panel-overlay" id="suiviOverlay" hidden>
+  <div class="panel">
+    <h2 id="suiviTitle">Suivi terrain</h2>
+    <datalist id="batList"><option value="BR"><option value="BK"><option value="BAN"><option value="BL"><option value="Station de pompage"><option value="Salle des machines"></datalist>
+    <div class="field" id="s_puceBox">
+      <label>Puce RFID / NFC</label>
+      <div class="field-with-btn">
+        <input id="s_code" class="mono" readonly>
+        <button type="button" class="btn primary" id="s_assocBtn">📡 Associer la puce</button>
+      </div>
+    </div>
+    <div class="lieu-group">
+      <span class="field-label">Localisation</span>
+      <div class="field-row">
+        <div class="field narrow"><label>Tranche</label><input id="s_tranche" placeholder="Ex. 1"></div>
+        <div class="field wide"><label>Bâtiment</label><input id="s_batiment" list="batList" placeholder="Ex. BAN"></div>
+        <div class="field"><label>Local</label><input id="s_local" placeholder="Ex. 0 114"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Date de pose</label>
+      <input id="s_datePose" type="date">
+    </div>
+    <div id="suiviChampsList" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <div class="field">
+      <label>Commentaires</label>
+      <textarea id="s_commentaires" rows="3" placeholder="Anomalie, fuite, bruit anormal, non-conformité constatée sur le terrain…"></textarea>
+    </div>
+    <div class="panel-actions">
+      <a href="#" id="suiviFullEditLink" class="muted admin-only">Modifier l'identification</a>
+      <div class="right">
+        <button class="btn" id="cancelSuiviBtn" type="button">Annuler</button>
+        <button class="btn primary" id="saveSuiviBtn" type="button">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIGURATION DU FORMULAIRE (administrateur) -->
+<div class="panel-overlay" id="formOverlay" hidden>
+  <div class="panel">
+    <h2>Formulaire de saisie</h2>
+    <div class="hint" style="margin-bottom:10px">Ces champs sont proposés aux opérateurs sur <b>tous</b> les équipements.</div>
+    <div class="fixedFields">Toujours présents : <b>Localisation</b> (tranche, bâtiment, local), <b>Date de pose</b>, <b>Commentaires</b>.</div>
+    <div id="formList"></div>
+    <div><button class="btn" id="addFormFieldBtn" type="button">+ Ajouter un champ</button></div>
+    <div class="hint" style="margin-top:10px">« Date d'échéance (alerte) » déclenche les mails avant l'échéance ; « Conformité » déclenche un mail si l'opérateur choisit « Non conforme ». Supprimer un champ efface ses valeurs sur tous les équipements.</div>
+    <div class="panel-actions">
+      <div></div>
+      <div class="right">
+        <button class="btn" id="cancelFormBtn" type="button">Annuler</button>
+        <button class="btn primary" id="saveFormBtn" type="button">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CODE ADMINISTRATEUR -->
+<div class="panel-overlay" id="adminOverlay" hidden>
+  <div class="panel">
+    <h2 id="adminTitle">Mode administrateur</h2>
+    <div class="hint" id="adminHint" style="margin-bottom:10px"></div>
+    <div class="field" id="a_oldWrap"><label id="a_oldLabel">Code administrateur</label><input id="a_old" type="password" autocomplete="off"></div>
+    <div class="field" id="a_newWrap"><label>Nouveau code (4 caractères minimum)</label><input id="a_new" type="password" autocomplete="new-password"></div>
+    <div class="field" id="a_new2Wrap"><label>Confirmer le nouveau code</label><input id="a_new2" type="password" autocomplete="new-password"></div>
+    <div class="panel-actions">
+      <div></div>
+      <div class="right">
+        <button class="btn" id="cancelAdminBtn" type="button">Annuler</button>
+        <button class="btn primary" id="okAdminBtn" type="button">Valider</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PUCE INCONNUE : CHOISIR L'ÉQUIPEMENT -->
+<div class="panel-overlay" id="pickOverlay" hidden>
+  <div class="panel">
+    <h2>Puce non reconnue</h2>
+    <div class="hint" style="margin-bottom:10px">Puce <b class="mono" id="pickCode"></b> : à quel équipement l'associer ?</div>
+    <div class="field"><input id="pickSearch" placeholder="Rechercher un équipement sans puce…"></div>
+    <div id="pickList"></div>
+    <div class="panel-actions">
+      <div><button class="btn admin-only" id="pickCreateBtn" type="button">➕ Nouvel équipement</button></div>
+      <div class="right"><button class="btn" id="pickCancelBtn" type="button">Annuler</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // Page hébergée hors Apps Script : coller ici l'URL /exec du déploiement pour partager les données
+  // (laisser vide = mode local, données stockées uniquement dans ce navigateur)
+  var API_URL = "";
+
+  // Aperçu : true = données d'exemple, rien n'est enregistré (rechargez la page pour repartir des exemples)
+  var DEMO = false;
+  var MODE = "apps"; // apps | local | demo | remote
+
+  // ---------- MODE HORS APPS SCRIPT : local (localStorage) ou serveur partagé (API_URL) ----------
+  if (typeof google === "undefined" || !google.script) {
+    (function () {
+      var KEY = "suiviPompesLocal";
+      var mem = null;
+      function load() {
+        if (DEMO) { mem = mem || buildDemo(); return JSON.parse(JSON.stringify(mem)); }
+        try { var raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+        return mem || { equipements: [], plans: [], formulaire: [], diffusion: [], seuilJours: 30 };
+      }
+      function save(db) {
+        mem = db;
+        if (DEMO) return;
+        try { localStorage.setItem(KEY, JSON.stringify(db)); }
+        catch (e) { throw new Error("Stockage local plein ou indisponible (fichier ou plan trop volumineux ?)"); }
+      }
+      function buildDemo() {
+        function dd(n) { var d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+        var FORM = [["N° de série", "texte"], ["Puissance (kW)", "nombre"], ["Prochaine maintenance", "date_echeance"],
+          ["Dernier contrôle électrique", "date"], ["État", "conformite"], ["Notice constructeur", "fichier"]]
+          .map(function (f, i) { return { Id: "f" + (i + 1), Nom: f[0], Type: f[1], Ordre: i }; });
+        function ch(nom, type, valeur) {
+          var f = FORM.filter(function (x) { return x.Nom === nom; })[0];
+          return { ChampId: f.Id, Nom: f.Nom, Type: f.Type, Valeur: valeur };
+        }
+        var extras = {
+          d1: [-1500, ""],
+          d2: [-900, "Vibrations légèrement plus fortes qu'à la dernière ronde, à surveiller."],
+          d3: [-700, "Fuite au joint constatée à la ronde du matin : pompe à l'arrêt, intervention à programmer. Photo envoyée au chef d'équipe."],
+          d4: [-2100, ""],
+          d5: [-300, ""],
+          d6: [-120, ""]
+        };
+        function eq(id, nom, cat, code, t, b, l, px, py, maj, champs) {
+          champs.forEach(function (c, i) { c.Id = id + "-c" + i; c.EquipementId = id; c.Ordre = i; });
+          return { Id: id, Nom: nom, Categorie: cat, CodeRFID: code, Tranche: t, Batiment: b, Local: l,
+            EmplacementTexte: "Tranche " + t + " / " + b + " / Local " + l,
+            PlanId: "", PlanX: "", PlanY: "",
+            DateCreation: dd(-300), DerniereMaj: dd(maj), example: true, champs: champs,
+            DatePose: dd(extras[id][0]), Commentaires: extras[id][1] };
+        }
+        return {
+          equipements: [
+            eq("d1", "Pompe d'épuisement P-101", "Pompe", "04:A1:B2:C3:D4:E5:F1", "1", "Station de pompage", "SP 012", 80, 75, -45, [
+              ch("N° de série", "texte", "SN-2019-04417", false), ch("Puissance (kW)", "nombre", "15", false),
+              ch("Prochaine maintenance", "date_echeance", dd(-6), true), ch("État", "conformite", "Conforme", true),
+              ch("Notice constructeur", "fichier", "", false)]),
+            eq("d2", "Pompe de circulation P-204", "Pompe", "04:A1:B2:C3:D4:E5:F2", "1", "Salle des machines", "0 031", 34, 57, -5, [
+              ch("N° de série", "texte", "SN-2021-11802", false), ch("Puissance (kW)", "nombre", "45", false),
+              ch("Prochaine maintenance", "date_echeance", dd(12), true), ch("État", "conformite", "Conforme", true)]),
+            eq("d3", "Pompe doseuse P-310", "Pompe", "04:A1:B2:C3:D4:E5:F3", "1", "BAN", "0 114", 21, 28, -2, [
+              ch("N° de série", "texte", "SN-2020-07733", false), ch("Prochaine maintenance", "date_echeance", dd(75), true),
+              ch("État", "conformite", "Non conforme", true)]),
+            eq("d4", "Pompe de relevage P-118", "Pompe", "04:A1:B2:C3:D4:E5:F4", "1", "BK", "0 207", 69, 28, -20, [
+              ch("N° de série", "texte", "SN-2018-02290", false), ch("Prochaine maintenance", "date_echeance", dd(140), true),
+              ch("État", "conformite", "Conforme", true)]),
+            eq("d5", "Moteur de pompe M-45", "Moteur", "04:A1:B2:C3:D4:E5:F5", "1", "BL", "0 318", 88, 28, -60, [
+              ch("N° de série", "texte", "SN-2022-15001", false), ch("Dernier contrôle électrique", "date", dd(-120), true),
+              ch("Prochaine maintenance", "date_echeance", dd(210), true)]),
+            eq("d6", "Pompe portable PP-02", "Pompe", "04:A1:B2:C3:D4:E5:F6", "2", "BR", "0 045", null, null, -1, [
+              ch("N° de série", "texte", "SN-2023-20118", false), ch("Prochaine maintenance", "date_echeance", dd(300), true),
+              ch("État", "conformite", "Conforme", true)])
+          ],
+          plans: [],
+          formulaire: FORM,
+          codeAdmin: "1234",
+          alertesActives: true,
+          diffusion: ["responsable.pompes@exemple.fr", "maintenance@exemple.fr"],
+          seuilJours: 30
+        };
+      }
+      function uid() { return "id-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
+      function today() { return new Date().toISOString().slice(0, 10); }
+      var api = {
+        getData: function () {
+          var d = JSON.parse(JSON.stringify(load()));
+          d.adminDefini = !!d.codeAdmin; delete d.codeAdmin;
+          d.formulaire = d.formulaire || [];
+          return d;
+        },
+        getAppUrl: function () { return location.href.split("?")[0].split("#")[0]; },
+        verifierAdmin: function (code) { var db = load(); return !!db.codeAdmin && db.codeAdmin === String(code); },
+        definirCodeAdmin: function (nouveau, ancien) {
+          var db = load();
+          if (String(nouveau || "").length < 4) throw new Error("Le code doit contenir au moins 4 caractères");
+          if (db.codeAdmin && db.codeAdmin !== String(ancien)) throw new Error("Code administrateur incorrect");
+          db.codeAdmin = String(nouveau);
+          save(db);
+          return true;
+        },
+        saveEquipement: function (code, p) {
+          var db = load(); exiger(db, code);
+          if (!String(p.nom || "").trim()) throw new Error("Le nom est obligatoire");
+          dupePuce(db, p.codeRFID, p.id);
+          var idx = db.equipements.findIndex(function (e) { return e.Id === p.id; });
+          if (idx >= 0) {
+            var e = db.equipements[idx];
+            e.Nom = p.nom; e.Categorie = p.categorie || ""; e.CodeRFID = p.codeRFID || ""; e.DerniereMaj = today();
+            save(db); return { id: e.Id };
+          }
+          var id = uid();
+          db.equipements.push({ Id: id, Nom: p.nom, Categorie: p.categorie || "", CodeRFID: p.codeRFID || "", Tranche: "", Batiment: "", Local: "",
+            EmplacementTexte: "", DatePose: "", Commentaires: "", DateCreation: today(), DerniereMaj: today(), champs: [] });
+          save(db);
+          return { id: id };
+        },
+        deleteEquipement: function (code, id) {
+          var db = load(); exiger(db, code);
+          db.equipements = db.equipements.filter(function (e) { return e.Id !== id; });
+          save(db);
+          return true;
+        },
+        saveFormulaire: function (code, champs) {
+          var db = load(); exiger(db, code);
+          var vus = {};
+          db.formulaire = (champs || []).filter(function (c) { return String(c.nom || "").trim(); }).map(function (c, i) {
+            var id = c.id || uid(); vus[id] = true;
+            return { Id: id, Nom: c.nom.trim(), Type: c.type, Ordre: i };
+          });
+          db.equipements.forEach(function (e) { e.champs = (e.champs || []).filter(function (c) { return vus[c.ChampId]; }); });
+          save(db);
+          return true;
+        },
+        saveSuivi: function (p) {
+          var db = load();
+          var e = db.equipements.find(function (x) { return x.Id === p.id; });
+          if (!e) throw new Error("Équipement introuvable");
+          e.Tranche = p.tranche || ""; e.Batiment = p.batiment || ""; e.Local = p.local || "";
+          e.DatePose = p.datePose || ""; e.Commentaires = p.commentaires || ""; e.DerniereMaj = today();
+          e.EmplacementTexte = [p.tranche ? "Tranche " + p.tranche : "", p.batiment, p.local ? "Local " + p.local : ""].filter(Boolean).join(" / ");
+          var defs = {};
+          (db.formulaire || []).forEach(function (f) { defs[f.Id] = f; });
+          (p.valeurs || []).forEach(function (v) {
+            var d = defs[v.champId]; if (!d) return;
+            var c = (e.champs || []).find(function (x) { return x.ChampId === v.champId; });
+            if (c) c.Valeur = v.valeur;
+            else (e.champs = e.champs || []).push({ Id: uid(), EquipementId: e.Id, ChampId: d.Id, Nom: d.Nom, Type: d.Type, Valeur: v.valeur, Ordre: d.Ordre });
+          });
+          e.champs = (e.champs || []).map(function (c) { var d = defs[c.ChampId]; if (d) { c.Nom = d.Nom; c.Type = d.Type; c.Ordre = d.Ordre; } return c; })
+            .sort(function (a, b) { return a.Ordre - b.Ordre; });
+          save(db);
+          return true;
+        },
+        associerPuce: function (id, puce) {
+          var db = load();
+          var e = db.equipements.find(function (x) { return x.Id === id; });
+          if (!e) throw new Error("Équipement introuvable");
+          if (String(e.CodeRFID || "").trim()) throw new Error("Cet équipement a déjà une puce : seul l'administrateur peut la modifier");
+          dupePuce(db, puce, id);
+          e.CodeRFID = String(puce).trim(); e.DerniereMaj = today();
+          save(db);
+          return true;
+        },
+        uploadFichier: function (base64, filename, mime) { return "data:" + mime + ";base64," + base64; },
+        envoyerAlertesMaintenant: function () { throw new Error("Envoi de mails indisponible : il faut le serveur Google (Apps Script)"); },
+        activerAlertesQuotidiennes: function () { throw new Error("Activation indisponible : il faut le serveur Google (Apps Script)"); },
+        saveDiffusion: function (code, emails, seuil) {
+          var db = load(); exiger(db, code);
+          db.diffusion = emails;
+          db.seuilJours = seuil;
+          save(db);
+          return true;
+        }
+      };
+      function exiger(db, code) { if (!db.codeAdmin || db.codeAdmin !== String(code)) throw new Error("Code administrateur incorrect"); }
+      function dupePuce(db, puce, idSelf) {
+        var n = function (v) { return String(v || "").trim().toLowerCase().replace(/[:\s]/g, ""); };
+        if (!n(puce)) return;
+        db.equipements.forEach(function (e) { if (e.Id !== idSelf && n(e.CodeRFID) === n(puce)) throw new Error("Cette puce est déjà associée à « " + e.Nom + " »"); });
+      }
+      function runner() {
+        var ok = null, ko = null;
+        var chain = new Proxy({}, { get: function (_, name) {
+          if (name === "withSuccessHandler") return function (f) { ok = f; return chain; };
+          if (name === "withFailureHandler") return function (f) { ko = f; return chain; };
+          return function () {
+            var args = arguments;
+            setTimeout(function () {
+              try { var r = api[name].apply(null, args); if (ok) ok(r); }
+              catch (e) { if (ko) ko(e); else console.error(e); }
+            }, 0);
+          };
+        } });
+        return chain;
+      }
+      function getToken() {
+        var t = "";
+        try { t = localStorage.getItem("suiviPompesToken") || ""; } catch (e) {}
+        if (!t) {
+          t = (prompt("Code d'accès au serveur partagé :") || "").trim();
+          if (t) { try { localStorage.setItem("suiviPompesToken", t); } catch (e) {} }
+        }
+        return t;
+      }
+      function callServer(name, args) {
+        return fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ token: getToken(), action: name, args: args })
+        }).then(function (r) { return r.json(); }).then(function (j) {
+          if (!j.ok) {
+            if (j.error === "Accès refusé") { try { localStorage.removeItem("suiviPompesToken"); } catch (e) {} }
+            throw new Error(j.error);
+          }
+          return j.result;
+        });
+      }
+      function remoteRunner() {
+        var ok = null, ko = null;
+        var chain = new Proxy({}, { get: function (_, name) {
+          if (name === "withSuccessHandler") return function (f) { ok = f; return chain; };
+          if (name === "withFailureHandler") return function (f) { ko = f; return chain; };
+          return function () {
+            if (name === "getAppUrl") { setTimeout(function () { if (ok) ok(api.getAppUrl()); }, 0); return; }
+            callServer(name, Array.prototype.slice.call(arguments))
+              .then(function (r) { if (ok) ok(r); })
+              .catch(function (e) { if (ko) ko(e); else console.error(e); });
+          };
+        } });
+        return chain;
+      }
+      var remote = !!API_URL && !DEMO;
+      MODE = remote ? "remote" : (DEMO ? "demo" : "local");
+      window.google = { script: { get run() { return remote ? remoteRunner() : runner(); } } };
+    })();
+  }
+
+  var INITIAL_CODE = decodeURIComponent('<?!= initialCode ?>');
+  if (INITIAL_CODE.indexOf("<" + "?") === 0) { // fichier ouvert hors Apps Script : on lit ?code= dans l'adresse
+    try { INITIAL_CODE = new URLSearchParams(location.search).get("code") || ""; } catch (e) { INITIAL_CODE = ""; }
+  }
+  var state = { data: { equipements: [], formulaire: [], plans: [], diffusion: [], seuilJours: 30, adminDefini: false }, adminCode: null, editingId: null, activeCategory: null, filter: null };
+  var els = {};
+  ["searchInput","scanOpenBtn","addBtn","diffusionBtn","categoryChips","grid","summaryTiles","modeBanner","storageNote",
+   "alertSub","alertSendBtn","alertActivateBtn",
+   "eqOverlay","eqTitle","f_nom","f_categorie","catList","f_code","readNfcBtn","scanCodeBtn","tagLinkBox","tagLink","copyTagLinkBtn",
+   "deleteEqBtn","cancelEqBtn","saveEqBtn",
+   "diffOverlay","f_seuil","diffList","addDiffBtn","cancelDiffBtn","saveDiffBtn","toast"
+  ].forEach(function (id) { els[id] = document.getElementById(id); });
+
+  function toast(msg, ms) {
+    els.toast.textContent = msg;
+    els.toast.classList.add("show");
+    setTimeout(function () { els.toast.classList.remove("show"); }, ms || 2600);
+  }
+
+  // Affiche à l'écran toute erreur JavaScript (utile sur téléphone, sans console)
+  window.addEventListener("error", function (e) {
+    toast("Erreur : " + e.message + " (ligne " + e.lineno + ")", 12000);
+  });
+
+  function applyMode() {
+    var labels = { apps: "Synchronisé", remote: "Synchronisé", local: "Local", demo: "Aperçu" };
+    els.storageNote.textContent = labels[MODE] || "";
+    var banners = {
+      local: "📴 Mode local — données stockées sur cet appareil",
+      demo: "👁 Aperçu — données d'exemple, rien n'est enregistré · code administrateur de démonstration : 1234"
+    };
+    els.modeBanner.textContent = banners[MODE] || "";
+    els.modeBanner.hidden = !banners[MODE];
+  }
+
+  function countAlertes() {
+    var n = 0;
+    state.data.equipements.forEach(function (e) {
+      (e.champs || []).forEach(function (c) {
+        if (c.Type === "date_echeance" && c.Valeur && joursRestants(c.Valeur) <= state.data.seuilJours) n++;
+        if (c.Type === "conformite" && c.Valeur === "Non conforme") n++;
+      });
+    });
+    return n;
+  }
+
+  function renderAlertCard() {
+    var nd = state.data.diffusion.length;
+    var server = (MODE === "apps" || MODE === "remote");
+    var txt = (nd === 0 ? "aucun destinataire" : nd + " destinataire" + (nd > 1 ? "s" : "")) + " · alerte " + state.data.seuilJours + " j avant l'échéance";
+    var cls = "sub";
+    if (server && state.data.alertesActives) { txt += " · envoi automatique actif chaque jour vers 7 h"; cls += " is-ok"; }
+    else if (server) { txt += " · envoi automatique non activé"; cls += " is-warn"; }
+    else if (MODE === "demo") { txt += " · aperçu : aucun mail n'est envoyé"; }
+    else { txt += " · envoi indisponible en mode local (serveur Google requis)"; cls += " is-warn"; }
+    els.alertSub.className = cls;
+    els.alertSub.textContent = txt;
+    els.alertActivateBtn.hidden = !(server && !state.data.alertesActives);
+  }
+
+  els.alertSendBtn.addEventListener("click", function () {
+    if (MODE === "demo") { toast("Aperçu : " + countAlertes() + " alerte(s) seraient envoyées à " + state.data.diffusion.length + " destinataire(s)", 6000); return; }
+    if (MODE === "local") { toast("Envoi de mails indisponible en mode local : il faut le serveur Google (Apps Script)", 7000); return; }
+    els.alertSendBtn.disabled = true;
+    adm("envoyerAlertesMaintenant", [], function (r) {
+      els.alertSendBtn.disabled = false;
+      toast(r && r.envoyes ? r.envoyes + " alerte(s) envoyée(s) à " + r.destinataires + " destinataire(s)" : ((r && r.raison) || "Aucune alerte à envoyer"), 7000);
+    }, function (err) {
+      els.alertSendBtn.disabled = false;
+      toast("Erreur : " + err.message, 9000);
+    });
+  });
+
+  els.alertActivateBtn.addEventListener("click", function () {
+    adm("activerAlertesQuotidiennes", [], function () {
+      toast("Envoi automatique activé : tous les jours vers 7 h");
+      loadData();
+    }, function (err) { toast("Erreur : " + err.message, 9000); });
+  });
+
+  function loadData(cb) {
+    google.script.run.withSuccessHandler(function (data) {
+      if (!data) { toast("Chargement impossible : réponse vide du serveur", 8000); return; }
+      data.formulaire = data.formulaire || [];
+      state.data = data;
+      renderCategories();
+      renderGrid();
+      renderAlertCard();
+      handleInitialCode();
+      if (typeof cb === "function") cb();
+    }).withFailureHandler(function (err) { toast("Erreur de chargement : " + err.message); }).getData();
+  }
+
+  // ---------- LISTE / RECHERCHE ----------
+  function categories() {
+    var set = {};
+    state.data.equipements.forEach(function (e) { if (e.Categorie) set[e.Categorie] = true; });
+    return Object.keys(set).sort();
+  }
+
+  function renderCategories() {
+    els.categoryChips.innerHTML = "";
+    var all = document.createElement("button");
+    all.type = "button";
+    all.className = "chip" + (state.activeCategory === null ? " is-active" : "");
+    all.textContent = "Toutes";
+    all.onclick = function () { state.activeCategory = null; renderCategories(); renderGrid(); };
+    els.categoryChips.appendChild(all);
+    categories().forEach(function (c) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip" + (state.activeCategory === c ? " is-active" : "");
+      chip.textContent = c;
+      chip.onclick = function () { state.activeCategory = c; renderCategories(); renderGrid(); };
+      els.categoryChips.appendChild(chip);
+    });
+    els.catList.innerHTML = categories().map(function (c) { return "<option value=\"" + escapeHtml(c) + "\">"; }).join("");
+  }
+
+  // ---------- Localisation : tranche / bâtiment / local ----------
+  function cleanTranche(v) { return String(v == null ? "" : v).trim().replace(/^tranche\s*/i, ""); }
+  function cleanLocal(v) { return String(v == null ? "" : v).trim().replace(/^local\s*/i, ""); }
+  function lieuTexte(t, b, l) {
+    t = cleanTranche(t);
+    l = cleanLocal(l);
+    b = String(b == null ? "" : b).trim();
+    var parts = [];
+    if (t) parts.push("Tranche " + t);
+    if (b) parts.push(b);
+    if (l) parts.push("Local " + l);
+    return parts.join(" / ");
+  }
+  function lieu(eq) { return lieuTexte(eq.Tranche, eq.Batiment, eq.Local) || eq.EmplacementTexte || ""; }
+
+  function payloadFromEq(eq, champs) {
+    return {
+      id: eq.Id, nom: eq.Nom, categorie: eq.Categorie, codeRFID: eq.CodeRFID,
+      tranche: eq.Tranche || "", batiment: eq.Batiment || "", local: eq.Local || "", emplacementTexte: lieu(eq),
+      datePose: eq.DatePose || "", commentaires: eq.Commentaires || "",
+      champs: champs || (eq.champs || []).map(function (c) { return { nom: c.Nom, type: c.Type, valeur: c.Valeur, suivi: c.Suivi === "Oui" }; })
+    };
+  }
+
+  function fmtDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || "");
+    return m ? m[3] + "/" + m[2] + "/" + m[1] : (iso || "");
+  }
+  function agoText(iso) {
+    if (!iso) return "";
+    var j = Math.round((new Date().setHours(0,0,0,0) - new Date(iso).setHours(0,0,0,0)) / 86400000);
+    if (isNaN(j)) return "";
+    return j <= 0 ? "mis à jour aujourd'hui" : "mis à jour il y a " + j + " j";
+  }
+
+  function champStatus(eq) {
+    var today = new Date(); today.setHours(0,0,0,0);
+    var out = { warn: false, danger: false, overdue: false, nonConforme: false, next: null };
+    (eq.champs || []).forEach(function (c) {
+      if (c.Type === "date_echeance" && c.Valeur) {
+        var j = Math.round((new Date(c.Valeur) - today) / 86400000);
+        if (!out.next || j < out.next.jours) out.next = { nom: c.Nom, valeur: c.Valeur, jours: j };
+        if (j <= state.data.seuilJours) out.warn = true;
+        if (j < 0) { out.danger = true; out.overdue = true; }
+      }
+      if (c.Type === "conformite" && c.Valeur === "Non conforme") { out.danger = true; out.nonConforme = true; }
+    });
+    return out;
+  }
+
+  function catIcon(cat) {
+    var c = (cat || "").toLowerCase();
+    if (c.indexOf("pompe") !== -1) return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>';
+    if (c.indexOf("moteur") !== -1) return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z" fill="currentColor"/></svg>';
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>';
+  }
+
+  function renderSummary() {
+    var all = state.data.equipements, warn = 0, danger = 0;
+    all.forEach(function (e) { var s = champStatus(e); if (s.danger) danger++; else if (s.warn) warn++; });
+    var defs = [
+      { key: null, n: all.length, l: "Équipements", cls: "" },
+      { key: "warn", n: warn, l: "Échéance proche", cls: "t-warn" },
+      { key: "danger", n: danger, l: "À traiter", cls: "t-danger" }
+    ];
+    els.summaryTiles.innerHTML = "";
+    defs.forEach(function (d) {
+      var t = document.createElement("button");
+      t.type = "button";
+      t.className = "tile " + d.cls + (state.filter === d.key ? " is-active" : "");
+      t.innerHTML = '<span class="n tabular">' + d.n + '</span><span class="l">' + d.l + '</span>';
+      t.onclick = function () { state.filter = (state.filter === d.key ? null : d.key); renderSummary(); renderGrid(); };
+      els.summaryTiles.appendChild(t);
+    });
+  }
+
+  function renderGrid() {
+    renderSummary();
+    var q = (els.searchInput.value || "").toLowerCase().trim();
+    var list = state.data.equipements.filter(function (e) {
+      if (state.activeCategory && e.Categorie !== state.activeCategory) return false;
+      var st = champStatus(e);
+      if (state.filter === "warn" && !(st.warn && !st.danger)) return false;
+      if (state.filter === "danger" && !st.danger) return false;
+      if (!q) return true;
+      return (e.Nom + " " + e.Categorie + " " + e.CodeRFID + " " + lieu(e) + " " + (e.Commentaires || "")).toLowerCase().indexOf(q) !== -1;
+    });
+    els.grid.innerHTML = "";
+    if (list.length === 0) {
+      els.grid.innerHTML = '<div class="empty-state">Aucun équipement à afficher.<br>' + (isAdmin() ? 'Utilisez « + Ajouter un équipement ».' : 'Demandez à l\'administrateur de créer les équipements.') + '</div>';
+      return;
+    }
+    list.forEach(function (eq) {
+      var st = champStatus(eq);
+      var badges = "";
+      if (st.overdue) badges += '<span class="badge alert">échéance dépassée</span>';
+      if (st.nonConforme) badges += '<span class="badge alert">non conforme</span>';
+      if (!st.danger && st.warn) badges += '<span class="badge warn">échéance proche</span>';
+      if (!st.danger && !st.warn && st.next) badges += '<span class="badge ok">à jour</span>';
+      var nextTxt = "Aucune échéance renseignée", nextCls = "";
+      if (st.next) {
+        var j = st.next.jours;
+        nextTxt = st.next.nom + " : " + fmtDate(st.next.valeur) + (j < 0 ? " (dépassée de " + Math.abs(j) + " j)" : " (dans " + j + " j)");
+        nextCls = j < 0 ? " is-alert" : (j <= state.data.seuilJours ? " is-warn" : "");
+      }
+      var card = document.createElement("div");
+      card.className = "card" + (eq.example ? " is-example" : "") + (st.danger ? " is-danger" : "");
+      card.innerHTML =
+        '<div class="card-top"><div><div class="name">' + escapeHtml(eq.Nom) + '</div>' +
+          '<span class="card-cat"><span class="cat-badge">' + catIcon(eq.Categorie) + '</span>' + escapeHtml(eq.Categorie || "Sans catégorie") + '</span></div>' +
+          '<div class="card-badges">' + badges + '</div></div>' +
+        '<div class="card-code mono">' + escapeHtml(eq.CodeRFID || "sans puce associée") + '</div>' +
+        '<div class="card-loc"><span class="locpin">◈</span><span class="val">' + escapeHtml(lieu(eq) || "Localisation à renseigner") + '</span></div>' +
+        '<div class="card-line' + nextCls + '">' + escapeHtml(nextTxt) + '</div>' +
+        (eq.DatePose ? '<div class="card-line">Posé le ' + escapeHtml(fmtDate(eq.DatePose)) + '</div>' : '') +
+        (eq.Commentaires ? '<div class="card-comment">💬 ' + escapeHtml(eq.Commentaires) + '</div>' : '') +
+        (eq.example ? '<div class="card-example-tag">(exemple) — à modifier ou supprimer</div>' : '') +
+        '<div class="card-meta"><span></span><span>' + escapeHtml(agoText(eq.DerniereMaj)) + '</span></div>' +
+        '<div class="card-actions"><button type="button" class="btn" data-role="suiviBtn">📋 Suivi terrain</button>' +
+        (eq.CodeRFID ? '' : '<button type="button" class="btn" data-role="assocBtn">📡 Associer la puce</button>') +
+        '<button type="button" class="btn admin-only" data-role="editBtn">Modifier</button></div>';
+      card.querySelector("[data-role=suiviBtn]").addEventListener("click", function () { openSuiviTerrain(eq); });
+      var assocBtn = card.querySelector("[data-role=assocBtn]");
+      if (assocBtn) assocBtn.addEventListener("click", function () {
+        startNfc(assocBtn, "📡 Associer la puce", function (uid) {
+          var dupe = state.data.equipements.find(function (e) { return e.Id !== eq.Id && norm(e.CodeRFID) === norm(uid); });
+          if (dupe) { toast("Cette puce est déjà associée à « " + dupe.Nom + " »", 8000); return; }
+          google.script.run.withSuccessHandler(function () { toast("Puce associée à « " + eq.Nom + " »"); loadData(); })
+            .withFailureHandler(function (err) { toast("Erreur : " + err.message, 8000); }).associerPuce(eq.Id, uid);
+        });
+      });
+      card.querySelector("[data-role=editBtn]").addEventListener("click", function () { openEquipement(eq); });
+      els.grid.appendChild(card);
+    });
+  }
+
+  function escapeHtml(s) {
+    return (s || "").toString().replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  els.searchInput.addEventListener("input", renderGrid);
+
+  // ---------- RÔLES : opérateur (par défaut) / administrateur (code) ----------
+  function isAdmin() { return !!state.adminCode; }
+
+  function setAdmin(code) {
+    state.adminCode = code || null;
+    try { if (code) sessionStorage.setItem("suiviAdminCode", code); else sessionStorage.removeItem("suiviAdminCode"); } catch (e) {}
+    document.body.classList.toggle("is-admin", isAdmin());
+    document.getElementById("adminBtn").textContent = isAdmin() ? "🔓 Quitter le mode administrateur" : "🔒 Administrateur";
+    renderGrid();
+  }
+
+  // Appel d'une fonction réservée à l'administrateur : le code part en premier argument et est revérifié par le serveur
+  function adm(name, args, ok, ko) {
+    var r = google.script.run.withSuccessHandler(ok || function () {}).withFailureHandler(function (err) {
+      var msg = (err && err.message) || String(err);
+      var refuse = /Code administrateur incorrect/.test(msg);
+      if (refuse) { setAdmin(null); toast("Code administrateur refusé : retour au mode opérateur", 7000); }
+      if (ko) ko(err); else if (!refuse) toast("Erreur : " + msg, 8000);
+    });
+    r[name].apply(r, [state.adminCode].concat(args || []));
+  }
+
+  document.getElementById("adminBtn").addEventListener("click", function () {
+    if (isAdmin()) { setAdmin(null); toast("Mode opérateur"); return; }
+    openAdminOverlay(state.data.adminDefini ? "login" : "setup");
+  });
+
+  var adminMode = "login";
+  function openAdminOverlay(mode) {
+    adminMode = mode;
+    var t = { login: "Mode administrateur", setup: "Définir le code administrateur", change: "Changer le code administrateur" };
+    var h = {
+      login: "Le mode administrateur permet de créer les équipements, de configurer le formulaire de saisie et de régler les alertes mail.",
+      setup: "Aucun code administrateur n'est encore défini : choisissez-le maintenant. Il protège la configuration ; conservez-le précieusement.",
+      change: "Saisissez le code actuel puis le nouveau code."
+    };
+    document.getElementById("adminTitle").textContent = t[mode];
+    document.getElementById("adminHint").textContent = h[mode];
+    document.getElementById("a_oldLabel").textContent = mode === "change" ? "Code actuel" : "Code administrateur";
+    document.getElementById("a_oldWrap").hidden = (mode === "setup");
+    document.getElementById("a_newWrap").hidden = (mode === "login");
+    document.getElementById("a_new2Wrap").hidden = (mode === "login");
+    ["a_old", "a_new", "a_new2"].forEach(function (id) { document.getElementById(id).value = ""; });
+    document.getElementById("adminOverlay").hidden = false;
+    setTimeout(function () { document.getElementById(mode === "setup" ? "a_new" : "a_old").focus(); }, 50);
+  }
+  function closeAdminOverlay() { document.getElementById("adminOverlay").hidden = true; }
+  document.getElementById("cancelAdminBtn").addEventListener("click", closeAdminOverlay);
+  document.getElementById("adminOverlay").addEventListener("click", function (e) { if (e.target === this) closeAdminOverlay(); });
+  ["a_old", "a_new", "a_new2"].forEach(function (id) {
+    document.getElementById(id).addEventListener("keydown", function (e) { if (e.key === "Enter") document.getElementById("okAdminBtn").click(); });
+  });
+
+  document.getElementById("okAdminBtn").addEventListener("click", function () {
+    var btn = this;
+    var ancien = document.getElementById("a_old").value;
+    var nouveau = document.getElementById("a_new").value;
+    var nouveau2 = document.getElementById("a_new2").value;
+    function fin() { btn.disabled = false; }
+    if (adminMode === "login") {
+      if (!ancien) { toast("Saisissez le code administrateur"); return; }
+      btn.disabled = true;
+      google.script.run.withSuccessHandler(function (ok) {
+        fin();
+        if (!ok) { toast("Code incorrect", 5000); return; }
+        setAdmin(ancien); closeAdminOverlay(); toast("Mode administrateur activé");
+      }).withFailureHandler(function (err) { fin(); toast("Erreur : " + err.message, 8000); }).verifierAdmin(ancien);
+      return;
+    }
+    if (nouveau.length < 4) { toast("Le code doit contenir au moins 4 caractères"); return; }
+    if (nouveau !== nouveau2) { toast("Les deux saisies du nouveau code sont différentes"); return; }
+    btn.disabled = true;
+    google.script.run.withSuccessHandler(function () {
+      fin();
+      state.data.adminDefini = true;
+      setAdmin(nouveau); closeAdminOverlay();
+      toast(adminMode === "setup" ? "Code défini : mode administrateur activé" : "Code modifié");
+    }).withFailureHandler(function (err) { fin(); toast("Erreur : " + err.message, 8000); }).definirCodeAdmin(nouveau, adminMode === "change" ? ancien : "");
+  });
+  document.getElementById("codeChangeBtn").addEventListener("click", function () { openAdminOverlay("change"); });
+
+  // ---------- ADMIN : FORMULAIRE DE SAISIE (commun à tous les équipements) ----------
+  var FORM_TYPES = [["texte", "Texte"], ["nombre", "Nombre"], ["date", "Date"], ["date_echeance", "Date d'échéance (alerte)"], ["fichier", "Fichier PDF"], ["conformite", "Conformité"]];
+
+  function formRowEl(f) {
+    var row = document.createElement("div");
+    row.className = "formRow";
+    row.dataset.id = f.id || "";
+    row.innerHTML =
+      "<input data-role=\"nom\" placeholder=\"Nom du champ (ex. N° de série)\" value=\"" + escapeHtml(f.nom) + "\">" +
+      "<select data-role=\"type\">" + FORM_TYPES.map(function (t) {
+        return "<option value=\"" + t[0] + "\"" + (f.type === t[0] ? " selected" : "") + ">" + t[1] + "</option>";
+      }).join("") + "</select>" +
+      "<span class=\"rowBtns\"><button type=\"button\" class=\"btn\" data-role=\"up\" title=\"Monter\">▲</button>" +
+      "<button type=\"button\" class=\"btn\" data-role=\"down\" title=\"Descendre\">▼</button>" +
+      "<button type=\"button\" class=\"btn danger\" data-role=\"del\" title=\"Supprimer\">✕</button></span>";
+    row.querySelector("[data-role=up]").addEventListener("click", function () { if (row.previousElementSibling) row.parentNode.insertBefore(row, row.previousElementSibling); });
+    row.querySelector("[data-role=down]").addEventListener("click", function () { if (row.nextElementSibling) row.parentNode.insertBefore(row.nextElementSibling, row); });
+    row.querySelector("[data-role=del]").addEventListener("click", function () {
+      if (row.dataset.id && !confirm("Supprimer ce champ ? Ses valeurs seront effacées sur tous les équipements à l'enregistrement.")) return;
+      row.remove();
+    });
+    return row;
+  }
+
+  document.getElementById("formConfigBtn").addEventListener("click", function () {
+    var list = document.getElementById("formList");
+    list.innerHTML = "";
+    (state.data.formulaire || []).forEach(function (f) { list.appendChild(formRowEl({ id: f.Id, nom: f.Nom, type: f.Type })); });
+    if (!list.children.length) list.appendChild(formRowEl({ nom: "", type: "texte" }));
+    document.getElementById("formOverlay").hidden = false;
+  });
+  document.getElementById("addFormFieldBtn").addEventListener("click", function () {
+    var row = formRowEl({ nom: "", type: "texte" });
+    document.getElementById("formList").appendChild(row);
+    row.querySelector("[data-role=nom]").focus();
+  });
+  function closeFormOverlay() { document.getElementById("formOverlay").hidden = true; }
+  document.getElementById("cancelFormBtn").addEventListener("click", closeFormOverlay);
+  document.getElementById("formOverlay").addEventListener("click", function (e) { if (e.target === this) closeFormOverlay(); });
+  document.getElementById("saveFormBtn").addEventListener("click", function () {
+    var btn = this;
+    var champs = Array.prototype.slice.call(document.getElementById("formList").children).map(function (row) {
+      return { id: row.dataset.id || "", nom: row.querySelector("[data-role=nom]").value.trim(), type: row.querySelector("[data-role=type]").value };
+    }).filter(function (c) { return c.nom; });
+    btn.disabled = true;
+    adm("saveFormulaire", [champs], function () {
+      btn.disabled = false; closeFormOverlay(); toast("Formulaire enregistré"); loadData();
+    }, function (err) { btn.disabled = false; toast("Erreur : " + err.message, 8000); });
+  });
+
+  // ---------- ADMIN : IDENTIFICATION D'UN ÉQUIPEMENT (nom, catégorie, puce) ----------
+  function openEquipement(eq, presetCode) {
+    if (!isAdmin()) { toast("Réservé à l'administrateur"); return; }
+    state.editingId = eq ? eq.Id : null;
+    els.eqTitle.textContent = eq ? "Modifier l'identification" : "Nouvel équipement";
+    els.f_nom.value = eq ? eq.Nom : "";
+    els.f_categorie.value = eq ? (eq.Categorie || "") : "";
+    els.f_code.value = eq ? (eq.CodeRFID || "") : (presetCode || "");
+    els.deleteEqBtn.style.display = eq ? "inline-block" : "none";
+    els.eqOverlay.hidden = false;
+  }
+
+  function closeEquipement() { els.eqOverlay.hidden = true; els.tagLinkBox.hidden = true; stopNfc(); }
+  els.addBtn.addEventListener("click", function () { openEquipement(null); });
+  els.cancelEqBtn.addEventListener("click", closeEquipement);
+  els.eqOverlay.addEventListener("click", function (e) { if (e.target === els.eqOverlay) closeEquipement(); });
+
+  els.deleteEqBtn.addEventListener("click", function () {
+    if (!state.editingId) return;
+    if (!confirm("Supprimer cet équipement et toutes ses données ?")) return;
+    adm("deleteEquipement", [state.editingId], function () {
+      toast("Équipement supprimé");
+      closeEquipement();
+      loadData();
+    });
+  });
+
+  els.saveEqBtn.addEventListener("click", function () {
+    var nom = els.f_nom.value.trim();
+    if (!nom) { toast("Le nom est obligatoire"); return; }
+    var creation = !state.editingId;
+    var payload = { id: state.editingId, nom: nom, categorie: els.f_categorie.value.trim(), codeRFID: els.f_code.value.trim() };
+    els.saveEqBtn.disabled = true;
+    adm("saveEquipement", [payload], function (r) {
+      els.saveEqBtn.disabled = false;
+      closeEquipement();
+      loadData(function () {
+        if (creation && r && r.id) {
+          var neuf = state.data.equipements.find(function (e) { return e.Id === r.id; });
+          if (neuf) { toast("Équipement créé : complétez le formulaire de suivi"); openSuiviTerrain(neuf); return; }
+        }
+        toast("Équipement enregistré");
+      });
+    }, function (err) { els.saveEqBtn.disabled = false; toast("Erreur : " + err.message, 8000); });
+  });
+
+  // ---------- PUCE NFC = LIEN VERS L'EQUIPEMENT ----------
+  var appUrl = "";
+  google.script.run.withSuccessHandler(function (u) { appUrl = u || ""; }).getAppUrl();
+
+  function norm(s) { return (s || "").toString().trim().toLowerCase().replace(/[:\s]/g, ""); }
+
+  function findByCode(code) {
+    return state.data.equipements.find(function (e) { return norm(e.CodeRFID) === norm(code); });
+  }
+
+  var initialHandled = false;
+  function handleInitialCode() {
+    if (initialHandled || !INITIAL_CODE) return;
+    initialHandled = true;
+    var eq = findByCode(INITIAL_CODE);
+    if (eq) openSuiviTerrain(eq);
+    else toast("Aucun équipement associé au code " + INITIAL_CODE);
+  }
+
+  els.scanCodeBtn.addEventListener("click", function () {
+    var code = els.f_code.value.trim();
+    if (!code) { toast("Saisissez d'abord un code pour l'équipement"); els.f_code.focus(); return; }
+    if (!appUrl) { toast("URL de l'application indisponible, réessayez dans un instant"); return; }
+    els.tagLink.value = appUrl + (appUrl.indexOf("?") === -1 ? "?" : "&") + "code=" + encodeURIComponent(code);
+    els.tagLinkBox.hidden = false;
+    els.tagLink.focus();
+    els.tagLink.select();
+  });
+
+  els.copyTagLinkBtn.addEventListener("click", function () {
+    els.tagLink.focus();
+    els.tagLink.select();
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) {}
+    toast(ok ? "Lien copié" : "Sélectionnez le lien et copiez-le manuellement");
+  });
+
+  // Entrée dans la recherche : ouvre le suivi si le texte correspond exactement à un code (lecteur clavier ou saisie)
+  els.searchInput.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter") return;
+    var eq = findByCode(els.searchInput.value);
+    if (eq) { els.searchInput.value = ""; renderGrid(); openSuiviTerrain(eq); }
+  });
+
+  // ---------- LECTURE DE LA PUCE (Web NFC : Chrome sur Android, page en https:// hors iframe) ----------
+  var nfcCtrl = null;
+  var nfcActive = null;
+
+  function nfcUnavailableReason() {
+    if (window.top !== window.self) return "Lecture NFC impossible dans la version Apps Script (page encapsulée par Google) : ouvrez la version hébergée de l'outil.";
+    if (!window.isSecureContext) return "La lecture NFC exige une adresse en https://.";
+    if (!("NDEFReader" in window)) return "La lecture NFC exige Chrome sur Android, avec le NFC activé.";
+    return "";
+  }
+
+  function stopNfc() {
+    if (nfcCtrl) { try { nfcCtrl.abort(); } catch (e) {} nfcCtrl = null; }
+    if (nfcActive) {
+      nfcActive.btn.classList.remove("is-listening");
+      nfcActive.btn.textContent = nfcActive.label;
+      nfcActive = null;
+    }
+  }
+
+  function startNfc(btn, label, onSerial) {
+    if (nfcActive && nfcActive.btn === btn) { stopNfc(); return; } // 2e clic = annuler
+    stopNfc();
+    var why = nfcUnavailableReason();
+    if (why) { toast(why, 9000); return; }
+    var ctrl = new AbortController();
+    nfcCtrl = ctrl;
+    nfcActive = { btn: btn, label: label };
+    btn.classList.add("is-listening");
+    btn.textContent = "📡 Approchez la puce…";
+    var reader = new NDEFReader();
+    reader.scan({ signal: ctrl.signal }).then(function () {
+      reader.onreading = function (ev) {
+        var uid = (ev.serialNumber || "").toUpperCase();
+        stopNfc();
+        if (!uid) { toast("Puce détectée mais identifiant illisible, réessayez", 6000); return; }
+        onSerial(uid);
+      };
+      reader.onreadingerror = function () { toast("Puce détectée mais illisible, réessayez", 6000); };
+    }).catch(function (err) {
+      stopNfc();
+      toast("Lecture NFC impossible : " + ((err && err.name) ? err.name + " - " : "") + ((err && err.message) || err), 9000);
+    });
+  }
+
+  // Fiche équipement : lire la puce et affecter son identifiant
+  els.readNfcBtn.addEventListener("click", function () {
+    startNfc(els.readNfcBtn, "📡 Lire la puce", function (uid) {
+      var dupe = state.data.equipements.find(function (e) { return e.Id !== state.editingId && norm(e.CodeRFID) === norm(uid); });
+      if (dupe) { toast("Cette puce est déjà associée à « " + dupe.Nom + " »", 8000); return; }
+      els.f_code.value = uid;
+      toast("Puce lue : " + uid);
+    });
+  });
+
+  // En-tête : scanner une puce pour ouvrir son équipement (ou en créer un si elle est inconnue)
+  els.scanOpenBtn.addEventListener("click", function () {
+    startNfc(els.scanOpenBtn, "📡 Scanner", function (uid) {
+      var eq = findByCode(uid);
+      if (eq) { openSuiviTerrain(eq); return; }
+      openPick(uid);
+    });
+  });
+
+  // ---------- SUIVI TERRAIN : formulaire configuré par l'administrateur (ouvert par scan) ----------
+  var suiviEq = null;
+
+  function joursRestants(dateStr) {
+    var today = new Date(); today.setHours(0,0,0,0);
+    return Math.round((new Date(dateStr) - today) / 86400000);
+  }
+
+  function valeurChamp(eq, f) {
+    var c = (eq.champs || []).find(function (x) { return x.ChampId === f.Id; });
+    return c ? (c.Valeur == null ? "" : c.Valeur) : "";
+  }
+
+  function suiviFieldHtml(f, valeur) {
+    var a = "data-fid=\"" + escapeHtml(f.Id) + "\" data-type=\"" + f.Type + "\"";
+    var input;
+    if (f.Type === "date" || f.Type === "date_echeance") {
+      var infoHtml = "";
+      if (f.Type === "date_echeance" && valeur) {
+        var j = joursRestants(valeur);
+        var cls = j < 0 ? "danger" : (j <= state.data.seuilJours ? "warn" : "ok");
+        var txt = j < 0 ? "Échéance dépassée de " + Math.abs(j) + " j" : "Échéance dans " + j + " j";
+        infoHtml = "<div class=\"echeanceInfo " + cls + "\">" + txt + "</div>";
+      }
+      input = infoHtml + "<input type=\"date\" " + a + " value=\"" + escapeHtml(valeur) + "\">" +
+        (f.Type === "date_echeance" ? "<div class=\"hint\">Mettez à jour cette date une fois la maintenance réalisée pour lever l'alerte.</div>" : "");
+    } else if (f.Type === "conformite") {
+      input = "<select " + a + "><option" + (valeur === "Non conforme" ? "" : " selected") + ">Conforme</option>" +
+        "<option" + (valeur === "Non conforme" ? " selected" : "") + ">Non conforme</option></select>";
+    } else if (f.Type === "fichier") {
+      input = (valeur ? "<div class=\"hint\"><a href=\"" + escapeHtml(valeur) + "\" target=\"_blank\" style=\"color:var(--accent)\">Voir le fichier actuel</a></div>" : "") +
+        "<input type=\"file\" accept=\"application/pdf\" data-url=\"" + escapeHtml(valeur) + "\" " + a + ">";
+    } else if (f.Type === "nombre") {
+      input = "<input type=\"number\" step=\"any\" " + a + " value=\"" + escapeHtml(valeur) + "\">";
+    } else {
+      input = "<input type=\"text\" " + a + " value=\"" + escapeHtml(valeur) + "\">";
+    }
+    return "<div class=\"field\"><label>" + escapeHtml(f.Nom) + "</label>" + input + "</div>";
+  }
+
+  function renderPuceBox() {
+    document.getElementById("s_code").value = suiviEq.CodeRFID || "";
+    document.getElementById("s_code").placeholder = "Aucune puce associée";
+    document.getElementById("s_assocBtn").hidden = !!suiviEq.CodeRFID;
+  }
+
+  function openSuiviTerrain(eq) {
+    suiviEq = eq;
+    document.getElementById("suiviTitle").textContent = eq.Nom;
+    document.getElementById("s_tranche").value = eq.Tranche || "";
+    document.getElementById("s_batiment").value = eq.Batiment || "";
+    document.getElementById("s_local").value = eq.Local || "";
+    document.getElementById("s_datePose").value = eq.DatePose || "";
+    document.getElementById("s_commentaires").value = eq.Commentaires || "";
+    renderPuceBox();
+    var form = state.data.formulaire || [];
+    document.getElementById("suiviChampsList").innerHTML = form.map(function (f) {
+      return suiviFieldHtml(f, valeurChamp(eq, f));
+    }).join("");
+    document.getElementById("suiviOverlay").hidden = false;
+  }
+
+  function closeSuivi() { document.getElementById("suiviOverlay").hidden = true; stopNfc(); }
+  document.getElementById("cancelSuiviBtn").addEventListener("click", closeSuivi);
+  document.getElementById("suiviOverlay").addEventListener("click", function (e) { if (e.target === this) closeSuivi(); });
+  document.getElementById("suiviFullEditLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    var eq = suiviEq;
+    closeSuivi();
+    openEquipement(eq);
+  });
+
+  // Association d'une puce à l'équipement ouvert (opérateur ou administrateur)
+  document.getElementById("s_assocBtn").addEventListener("click", function () {
+    var btn = this;
+    startNfc(btn, "📡 Associer la puce", function (uid) {
+      var dupe = state.data.equipements.find(function (e) { return e.Id !== suiviEq.Id && norm(e.CodeRFID) === norm(uid); });
+      if (dupe) { toast("Cette puce est déjà associée à « " + dupe.Nom + " »", 8000); return; }
+      google.script.run.withSuccessHandler(function () {
+        suiviEq.CodeRFID = uid;
+        renderPuceBox();
+        toast("Puce associée : " + uid);
+        loadData();
+      }).withFailureHandler(function (err) { toast("Erreur : " + err.message, 8000); }).associerPuce(suiviEq.Id, uid);
+    });
+  });
+
+  document.getElementById("saveSuiviBtn").addEventListener("click", function () {
+    if (!suiviEq) return;
+    var btn = this;
+    var inputs = Array.prototype.slice.call(document.querySelectorAll("#suiviChampsList [data-fid]"));
+    var valeurs = [];
+    var pending = 0, started = false, failed = false;
+
+    function envoyer() {
+      var payload = {
+        id: suiviEq.Id,
+        tranche: cleanTranche(document.getElementById("s_tranche").value),
+        batiment: document.getElementById("s_batiment").value.trim(),
+        local: cleanLocal(document.getElementById("s_local").value),
+        datePose: document.getElementById("s_datePose").value || "",
+        commentaires: document.getElementById("s_commentaires").value.trim(),
+        valeurs: valeurs
+      };
+      google.script.run.withSuccessHandler(function () {
+        btn.disabled = false;
+        toast("Suivi enregistré");
+        closeSuivi();
+        loadData();
+      }).withFailureHandler(function (err) { btn.disabled = false; toast("Erreur : " + err.message, 8000); }).saveSuivi(payload);
+    }
+
+    btn.disabled = true;
+    inputs.forEach(function (inp) {
+      var fid = inp.dataset.fid;
+      if (inp.type === "file") {
+        if (!inp.files.length) { valeurs.push({ champId: fid, valeur: inp.dataset.url || "" }); return; }
+        var file = inp.files[0];
+        pending++;
+        var reader = new FileReader();
+        reader.onload = function () {
+          google.script.run.withSuccessHandler(function (url) {
+            valeurs.push({ champId: fid, valeur: url });
+            pending--;
+            if (started && pending === 0 && !failed) envoyer();
+          }).withFailureHandler(function (err) {
+            failed = true; btn.disabled = false; toast("Erreur upload fichier : " + err.message, 8000);
+          }).uploadFichier(reader.result.split(",")[1], file.name, file.type || "application/pdf");
+        };
+        reader.readAsDataURL(file);
+      } else {
+        valeurs.push({ champId: fid, valeur: inp.value });
+      }
+    });
+    started = true;
+    if (pending === 0) envoyer();
+  });
+
+  // ---------- PUCE INCONNUE : choisir l'équipement à associer ----------
+  var pickUid = "";
+  function renderPick() {
+    var q = (document.getElementById("pickSearch").value || "").toLowerCase().trim();
+    var libres = state.data.equipements.filter(function (e) {
+      return !String(e.CodeRFID || "").trim() && (!q || (e.Nom + " " + e.Categorie + " " + lieu(e)).toLowerCase().indexOf(q) !== -1);
+    });
+    var box = document.getElementById("pickList");
+    if (!libres.length) {
+      box.innerHTML = "<div class=\"muted\" style=\"padding:6px 0 10px\">Aucun équipement sans puce" + (q ? " pour cette recherche" : "") + ". " +
+        (isAdmin() ? "Vous pouvez en créer un nouveau." : "Demandez à l'administrateur de créer l'équipement.") + "</div>";
+      return;
+    }
+    box.innerHTML = "";
+    libres.forEach(function (e) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "pickItem";
+      b.innerHTML = escapeHtml(e.Nom) + "<small>" + escapeHtml((e.Categorie || "Sans catégorie") + (lieu(e) ? " · " + lieu(e) : "")) + "</small>";
+      b.addEventListener("click", function () {
+        google.script.run.withSuccessHandler(function () {
+          closePick();
+          toast("Puce associée à « " + e.Nom + " »");
+          loadData(function () {
+            var maj = state.data.equipements.find(function (x) { return x.Id === e.Id; });
+            if (maj) openSuiviTerrain(maj);
+          });
+        }).withFailureHandler(function (err) { toast("Erreur : " + err.message, 8000); }).associerPuce(e.Id, pickUid);
+      });
+      box.appendChild(b);
+    });
+  }
+  function openPick(uid) {
+    pickUid = uid;
+    document.getElementById("pickCode").textContent = uid;
+    document.getElementById("pickSearch").value = "";
+    renderPick();
+    document.getElementById("pickOverlay").hidden = false;
+  }
+  function closePick() { document.getElementById("pickOverlay").hidden = true; }
+  document.getElementById("pickSearch").addEventListener("input", renderPick);
+  document.getElementById("pickCancelBtn").addEventListener("click", closePick);
+  document.getElementById("pickOverlay").addEventListener("click", function (e) { if (e.target === this) closePick(); });
+  document.getElementById("pickCreateBtn").addEventListener("click", function () { closePick(); openEquipement(null, pickUid); });
+
+  // ---------- DIFFUSION ----------
+  els.diffusionBtn.addEventListener("click", function () {
+    els.f_seuil.value = state.data.seuilJours;
+    els.diffList.innerHTML = "";
+    (state.data.diffusion.length ? state.data.diffusion : [""]).forEach(function (email) { addDiffRow(email); });
+    els.diffOverlay.hidden = false;
+  });
+  function addDiffRow(email) {
+    var row = document.createElement("div");
+    row.className = "diffRow";
+    row.innerHTML = "<input type=\"email\" value=\"" + escapeHtml(email || "") + "\" placeholder=\"nom@exemple.fr\">" +
+      "<button type=\"button\" class=\"btn danger\">✕</button>";
+    row.querySelector("button").addEventListener("click", function () { row.remove(); });
+    els.diffList.appendChild(row);
+  }
+  els.addDiffBtn.addEventListener("click", function () { addDiffRow(""); });
+  els.cancelDiffBtn.addEventListener("click", function () { els.diffOverlay.hidden = true; });
+  els.diffOverlay.addEventListener("click", function (e) { if (e.target === els.diffOverlay) els.diffOverlay.hidden = true; });
+  els.saveDiffBtn.addEventListener("click", function () {
+    var emails = Array.prototype.slice.call(els.diffList.querySelectorAll("input")).map(function (i) { return i.value.trim(); }).filter(Boolean);
+    var seuil = Number(els.f_seuil.value) || 30;
+    adm("saveDiffusion", [emails, seuil], function () {
+      toast("Paramètres enregistrés");
+      els.diffOverlay.hidden = true;
+      loadData();
+    });
+  });
+
+  applyMode();
+  loadData();
+  try {
+    var memo = sessionStorage.getItem("suiviAdminCode");
+    if (memo) google.script.run.withSuccessHandler(function (ok) { if (ok) setAdmin(memo); }).withFailureHandler(function () {}).verifierAdmin(memo);
+  } catch (e) {}
+</script>
+</body>
+</html>
