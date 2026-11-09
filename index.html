@@ -696,7 +696,7 @@
 <script>
   // Page hébergée hors Apps Script : coller ici l'URL /exec du déploiement pour partager les données
   // (laisser vide = mode local, données stockées uniquement dans ce navigateur)
-  var API_URL = "https://script.google.com/macros/s/AKfycbymBAxae2JLMMA9Br6qYqEtVH0k1BeZHOdVWM5uC-Y4b5WU92ALCp5a7DuaTMNnxL8V/exec";
+  var API_URL = "";
 
   // Aperçu : true = données d'exemple, rien n'est enregistré (rechargez la page pour repartir des exemples)
   var DEMO = false;
@@ -883,9 +883,11 @@
             e.EmplacementTexte = [e.Tranche ? "Tranche " + e.Tranche : "", e.Batiment, e.Local ? "Local " + e.Local : ""].filter(Boolean).join(" / ");
           }
           e.Statut = statut; e.DateStatut = today(); e.DerniereMaj = today();
+          var lieuMv = { t: e.Tranche || "", b: e.Batiment || "", l: e.Local || "" };
+          if (p.action === "repli") { e.Tranche = ""; e.Batiment = ""; e.Local = ""; e.EmplacementTexte = ""; }
           var n = new Date(), pad = function (x) { return (x < 10 ? "0" : "") + x; };
           db.mouvements.unshift({ Date: today() + " " + pad(n.getHours()) + ":" + pad(n.getMinutes()), EquipementId: e.Id, Nom: e.Nom, Action: statut,
-            Tranche: e.Tranche || "", Batiment: e.Batiment || "", Local: e.Local || "", Commentaire: p.commentaire || "", OpId: p.opId || "" });
+            Tranche: lieuMv.t, Batiment: lieuMv.b, Local: lieuMv.l, Commentaire: p.commentaire || "", OpId: p.opId || "" });
           save(db);
           return { ok: true, statut: statut };
         },
@@ -2327,6 +2329,7 @@ function inventaireHtml(data, opts) {
       var dt = new Date(op.t), pad = function (x) { return (x < 10 ? "0" : "") + x; };
       (data.mouvements = data.mouvements || []).unshift({ Date: eq.DateStatut + " " + pad(dt.getHours()) + ":" + pad(dt.getMinutes()), EquipementId: eq.Id, Nom: eq.Nom, Action: statut,
         Tranche: eq.Tranche || "", Batiment: eq.Batiment || "", Local: eq.Local || "", Commentaire: m.commentaire || "" });
+      if (m.action === "repli") { eq.Tranche = ""; eq.Batiment = ""; eq.Local = ""; eq.EmplacementTexte = ""; }
     } else if (op.name === "majApaveMasse") {
       (data.equipements || []).forEach(function (e) { if (a[0].indexOf(e.Id) !== -1) e.ApaveDate = a[1]; });
     } else if (op.name === "associerPuce") {
