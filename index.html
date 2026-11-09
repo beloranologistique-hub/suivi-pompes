@@ -1220,7 +1220,7 @@
     if (l) parts.push("Local " + l);
     return parts.join(" / ");
   }
-  function lieu(eq) { return lieuTexte(eq.Tranche, eq.Batiment, eq.Local) || eq.EmplacementTexte || ""; }
+  function lieu(eq) { if (eq.Statut === "Replié") return ""; return lieuTexte(eq.Tranche, eq.Batiment, eq.Local) || eq.EmplacementTexte || ""; }
 
   function payloadFromEq(eq, champs) {
     return {
@@ -1335,7 +1335,7 @@
       card.innerHTML =
         '<div class="card-top"><div class="name">' + escapeHtml(eq.Nom) + '</div>' +
           (k === "dispo" ? '<span class="badge dispo">à disposition</span>' : (k === "repli" ? '<span class="badge repli">repliée</span>' : '')) + '</div>' +
-        '<div class="card-loc"><span class="locpin">◈</span><span class="val">' + escapeHtml(lieu(eq) || "Localisation à renseigner") + '</span></div>' +
+        (eq.Statut === "Replié" ? "" : '<div class="card-loc"><span class="locpin">◈</span><span class="val">' + escapeHtml(lieu(eq) || "Localisation à renseigner") + '</span></div>') +
         '<div class="card-apave">' + macaronHtml(eq) + '<div class="tx"><b>' + (eq.ApaveDate ? fmtDate(eq.ApaveDate) : "Non renseigné") + '</b>' +
           (eq.ApaveDate ? (ap.st === "ko" ? "contrôle APAVE expiré" : "contrôle APAVE valable jusqu'au") : "contrôle APAVE") + '</div></div>' +
         (badges2 ? '<div class="card-badges-row">' + badges2 + '</div>' : '') +
@@ -1780,7 +1780,7 @@
     var k = statutKey(eq);
     document.getElementById("actInfo").textContent =
       (k === "dispo" ? "À disposition" : (k === "repli" ? "Repliée" : "Statut non renseigné")) +
-      (eq.DateStatut ? " depuis le " + fmtDate(eq.DateStatut) : "") + " · " + (lieu(eq) || "localisation à renseigner") + " · " + (eq.CodeRFID || "sans puce");
+      (eq.DateStatut ? " depuis le " + fmtDate(eq.DateStatut) : "") + (eq.Statut === "Replié" ? "" : " · " + (lieu(eq) || "localisation à renseigner")) + " · " + (eq.CodeRFID || "sans puce");
     renderActAlerts(eq);
     renderActSummary(eq);
     var h = (state.data.mouvements || []).filter(function (m) { return m.EquipementId === eq.Id; }).slice(0, 3);
